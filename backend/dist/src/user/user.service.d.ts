@@ -1,0 +1,158 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
+export declare class UserService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findOne(id: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    findByEmail(email: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    } | null>;
+    create(data: Prisma.UserCreateInput): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    update(id: string, data: Prisma.UserUpdateInput): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    followUser(followerId: string, followingId: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    unfollowUser(followerId: string, followingId: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateInterests(id: string, interests: string[]): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    getProfile(id: string): Promise<{
+        memberships: ({
+            club: {
+                id: string;
+                city: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                description: string | null;
+                isPrivate: boolean;
+                creatorId: string;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            role: import("@prisma/client").$Enums.Role;
+            userId: string;
+            clubId: string;
+        })[];
+        _count: {
+            memberships: number;
+            organizedEvents: number;
+            rsvps: number;
+            followedBy: number;
+            following: number;
+        };
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

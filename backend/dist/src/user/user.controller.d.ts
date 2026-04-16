@@ -1,0 +1,133 @@
+import { UserService } from './user.service';
+export declare class UserController {
+    private readonly userService;
+    constructor(userService: UserService);
+    getMe(req: any): Promise<{
+        memberships: ({
+            club: {
+                id: string;
+                city: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                description: string | null;
+                isPrivate: boolean;
+                creatorId: string;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            role: import("@prisma/client").$Enums.Role;
+            userId: string;
+            clubId: string;
+        })[];
+        _count: {
+            memberships: number;
+            organizedEvents: number;
+            rsvps: number;
+            followedBy: number;
+            following: number;
+        };
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    findOne(id: string): Promise<{
+        memberships: ({
+            club: {
+                id: string;
+                city: string | null;
+                createdAt: Date;
+                updatedAt: Date;
+                name: string;
+                description: string | null;
+                isPrivate: boolean;
+                creatorId: string;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            role: import("@prisma/client").$Enums.Role;
+            userId: string;
+            clubId: string;
+        })[];
+        _count: {
+            memberships: number;
+            organizedEvents: number;
+            rsvps: number;
+            followedBy: number;
+            following: number;
+        };
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    follow(req: any, id: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    unfollow(req: any, id: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateInterests(req: any, interests: string[]): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String?
+  avatar    String?
+  bio       String?
+  city      String?
+  level     Int      @default(1)
+  points    Int      @default(0)
+  streak    Int      @default(0)
+  lastActivityAt DateTime @default(now())
+  interests String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdClubs Club[]       @relation("ClubCreator")
+  memberships  ClubMember[]
+  organizedEvents Event[]   @relation("EventOrganizer")
+  rsvps        EventRsvp[]
+  posts        ClubPost[]
+  joinRequests ClubJoinRequest[]
+  messagesSent     Message[] @relation("SentMessages")
+  messagesReceived Message[] @relation("ReceivedMessages")
+  discussions  BookDiscussion[]
+  notifications Notification[]
+  achievements  Achievement[]
+  uploadedBooks Book[]        @relation("UserUploadedBooks")
+
+  followedBy User[] @relation("UserFollows")
+  following  User[] @relation("UserFollows")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  type      String   // MESSAGE, INVITE, RANK, RSVP
+  content   String
+  read      Boolean  @default(false)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Book {
+  id           String   @id @default(uuid())
+  title        String
+  author       String
+  description  String?
+  categories   String[]
+  cover        String?
+  pdfUrl       String?
+  externalLink String?
+  uploaderId   String?
+  uploader     User?    @relation("UserUploadedBooks", fields: [uploaderId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  discussions BookDiscussion[]
+}
+
+model Achievement {
+  id          String   @id @default(uuid())
+  type        String   // AUTHOR_SPECIALIST, NIGHT_OWL, etc
+  title       String
+  progress    Int      @default(0)
+  target      Int
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Club {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  city        String?
+  isPrivate   Boolean  @default(false)
+  creatorId   String
+  creator     User     @relation("ClubCreator", fields: [creatorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members  ClubMember[]
+  events   Event[]
+  invites  ClubInvite[]
+  requests ClubJoinRequest[]
+  posts    ClubPost[]
+  messages Message[]
+}
+
+model ClubMember {
+  id        String   @id @default(uuid())
+  clubId    String
+  club      Club     @relation(fields: [clubId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+
+  @@unique([clubId, userId])
+}
+
+enum Role {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+model ClubInvite {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  clubId    String
+  club      Club     @relation(fields: [clubId], references: [id])
+  expiresAt DateTime?
+  createdAt DateTime @default(now())
+}
+
+model ClubJoinRequest {
+  id        String   @id @default(uuid())
+  clubId    String
+  club      Club     @relation(fields: [clubId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  status    RequestStatus @default(PENDING)
+  createdAt DateTime @default(now())
+
+  @@unique([clubId, userId])
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ClubPost {
+  id        String   @id @default(uuid())
+  content   String
+  clubId    String?
+  club      Club?    @relation(fields: [clubId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  clubId    String?
+  club      Club?    @relation(fields: [clubId], references: [id])
+  eventId   String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model BookDiscussion {
+  id        String   @id @default(uuid())
+  content   String
+  chapter   Int?
+  bookId    String
+  book      Book     @relation(fields: [bookId], references: [id])
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id               String      @id @default(uuid())
+  title            String
+  description      String?
+  date             DateTime
+  type             EventType
+  link             String?
+  address          String?
+  locationLat      Float?
+  locationLng      Float?
+  status           EventStatus @default(DRAFT)
+  participantLimit Int?
+  clubId           String
+  club             Club        @relation(fields: [clubId], references: [id])
+  organizerId      String
+  organizer        User        @relation("EventOrganizer", fields: [organizerId], references: [id])
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  rsvps    EventRsvp[]
+  messages Message[]
+}
+
+enum EventType {
+  ONLINE
+  PRESENTIAL
+}
+
+enum EventStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model EventRsvp {
+  id        String   @id @default(uuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  status    RsvpStatus @default(CONFIRMED)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+}
+
+enum RsvpStatus {
+  CONFIRMED
+  DECLINED
+}
