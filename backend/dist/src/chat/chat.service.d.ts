@@ -2,7 +2,7 @@ import { PrismaService } from '../prisma/prisma.service';
 export declare class ChatService {
     private prisma;
     constructor(prisma: PrismaService);
-    saveMessage(userId: string, content: string, clubId?: string, eventId?: string): Promise<{
+    saveMessage(userId: string, content: string, clubId?: string, eventId?: string, receiverId?: string): Promise<{
         user: {
             username: string;
             avatar: string | null;
@@ -14,8 +14,9 @@ export declare class ChatService {
         content: string;
         clubId: string | null;
         eventId: string | null;
+        receiverId: string | null;
     }>;
-    getMessages(clubId?: string, eventId?: string): Promise<({
+    getMessages(clubId?: string, eventId?: string, userId?: string, receiverId?: string): Promise<({
         user: {
             username: string;
             avatar: string | null;
@@ -27,6 +28,7 @@ export declare class ChatService {
         content: string;
         clubId: string | null;
         eventId: string | null;
+        receiverId: string | null;
     })[]>;
     createDiscussion(userId: string, bookId: string, content: string, chapter?: number): Promise<{
         author: {

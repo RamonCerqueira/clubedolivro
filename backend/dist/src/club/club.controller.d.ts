@@ -116,14 +116,39 @@ export declare class ClubController {
         clubId: string;
         status: import("@prisma/client").$Enums.RequestStatus;
     }>;
+    createGlobalPost(req: any, content: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        clubId: string | null;
+        authorId: string;
+    }>;
     createPost(req: any, id: string, content: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
-        clubId: string;
+        clubId: string | null;
         authorId: string;
     }>;
+    getGlobalFeed(): Promise<({
+        author: {
+            username: string;
+            avatar: string | null;
+        };
+        club: {
+            id: string;
+            name: string;
+        } | null;
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        clubId: string | null;
+        authorId: string;
+    })[]>;
     getFeed(id: string): Promise<({
         author: {
             username: string;
@@ -134,7 +159,7 @@ export declare class ClubController {
         createdAt: Date;
         updatedAt: Date;
         content: string;
-        clubId: string;
+        clubId: string | null;
         authorId: string;
     })[]>;
 }

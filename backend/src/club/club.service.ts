@@ -130,7 +130,7 @@ export class ClubService {
   }
 
   // Feed
-  async createPost(userId: string, clubId?: string, content: string) {
+  async createPost(userId: string, content: string, clubId?: string) {
     if (clubId) {
       // Check membership if clubId is provided
       const membership = await this.prisma.clubMember.findUnique({

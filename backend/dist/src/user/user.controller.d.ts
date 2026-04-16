@@ -130,4 +130,27 @@ export declare class UserController {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    getFollowing(req: any): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
+    getFollowers(req: any): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
+    search(req: any, query: any): Promise<{
+        id: string;
+        username: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
 }

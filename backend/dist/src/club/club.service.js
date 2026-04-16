@@ -117,22 +117,40 @@ let ClubService = class ClubService {
             data: { status }
         });
     }
-    async createPost(userId, clubId, content) {
-        const membership = await this.prisma.clubMember.findUnique({
-            where: { clubId_userId: { clubId, userId } }
-        });
-        if (!membership)
-            throw new common_1.BadRequestException('Must be a member to post');
+    async createPost(userId, content, clubId) {
+        if (clubId) {
+            const membership = await this.prisma.clubMember.findUnique({
+                where: { clubId_userId: { clubId, userId } }
+            });
+            if (!membership)
+                throw new common_1.BadRequestException('Must be a member of the club to post there');
+        }
         const post = await this.prisma.clubPost.create({
             data: { content, clubId, authorId: userId }
         });
-        await this.gamificationService.addPoints(userId, 10, 'Publicou uma discussão no clube');
+        await this.gamificationService.addPoints(userId, 10, clubId ? 'Publicou uma discussão no clube' : 'Fez uma postagem no feed global');
         return post;
     }
     async getFeed(clubId) {
         return this.prisma.clubPost.findMany({
             where: { clubId },
             include: { author: { select: { username: true, avatar: true } } },
+            orderBy: { createdAt: 'desc' },
+            take: 50
+        });
+    }
+    async getGlobalFeed() {
+        return this.prisma.clubPost.findMany({
+            where: {
+                OR: [
+                    { clubId: null },
+                    { club: { isPrivate: false } }
+                ]
+            },
+            include: {
+                author: { select: { username: true, avatar: true } },
+                club: { select: { name: true, id: true } }
+            },
             orderBy: { createdAt: 'desc' },
             take: 50
         });

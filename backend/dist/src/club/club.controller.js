@@ -42,8 +42,14 @@ let ClubController = class ClubController {
     handleRequest(req, requestId, status) {
         return this.clubService.handleJoinRequest(req.user.id, requestId, status);
     }
+    createGlobalPost(req, content) {
+        return this.clubService.createPost(req.user.id, content, undefined);
+    }
     createPost(req, id, content) {
-        return this.clubService.createPost(req.user.id, id, content);
+        return this.clubService.createPost(req.user.id, content, id === 'global' ? undefined : id);
+    }
+    getGlobalFeed() {
+        return this.clubService.getGlobalFeed();
     }
     getFeed(id) {
         return this.clubService.getFeed(id);
@@ -104,6 +110,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClubController.prototype, "handleRequest", null);
 __decorate([
+    (0, common_1.Post)('posts'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)('content')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String]),
+    __metadata("design:returntype", void 0)
+], ClubController.prototype, "createGlobalPost", null);
+__decorate([
     (0, common_1.Post)(':id/posts'),
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('id')),
@@ -112,6 +126,12 @@ __decorate([
     __metadata("design:paramtypes", [Object, String, String]),
     __metadata("design:returntype", void 0)
 ], ClubController.prototype, "createPost", null);
+__decorate([
+    (0, common_1.Get)('feed/global'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ClubController.prototype, "getGlobalFeed", null);
 __decorate([
     (0, common_1.Get)(':id/feed'),
     __param(0, (0, common_1.Param)('id')),

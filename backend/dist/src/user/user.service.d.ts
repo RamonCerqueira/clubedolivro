@@ -155,4 +155,27 @@ export declare class UserService {
         createdAt: Date;
         updatedAt: Date;
     }>;
+    getFollowing(userId: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
+    getFollowers(userId: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
+    searchUsers(query: string): Promise<{
+        id: string;
+        username: string;
+        avatar: string | null;
+        bio: string | null;
+        level: number;
+    }[]>;
 }

@@ -121,12 +121,12 @@ export declare class ClubService {
         clubId: string;
         status: import("@prisma/client").$Enums.RequestStatus;
     }>;
-    createPost(userId: string, clubId: string, content: string): Promise<{
+    createPost(userId: string, content: string, clubId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
-        clubId: string;
+        clubId: string | null;
         authorId: string;
     }>;
     getFeed(clubId: string): Promise<({
@@ -139,7 +139,24 @@ export declare class ClubService {
         createdAt: Date;
         updatedAt: Date;
         content: string;
-        clubId: string;
+        clubId: string | null;
+        authorId: string;
+    })[]>;
+    getGlobalFeed(): Promise<({
+        author: {
+            username: string;
+            avatar: string | null;
+        };
+        club: {
+            id: string;
+            name: string;
+        } | null;
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        clubId: string | null;
         authorId: string;
     })[]>;
 }

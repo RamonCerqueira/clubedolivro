@@ -84,6 +84,60 @@ let UserService = class UserService {
         const { password, ...safeUser } = user;
         return safeUser;
     }
+    async getFollowing(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                following: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                        avatar: true,
+                        bio: true,
+                        level: true,
+                    }
+                }
+            }
+        });
+        return user?.following || [];
+    }
+    async getFollowers(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                followedBy: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true,
+                        avatar: true,
+                        bio: true,
+                        level: true,
+                    }
+                }
+            }
+        });
+        return user?.followedBy || [];
+    }
+    async searchUsers(query) {
+        return this.prisma.user.findMany({
+            where: {
+                OR: [
+                    { username: { contains: query, mode: 'insensitive' } },
+                    { bio: { contains: query, mode: 'insensitive' } },
+                ]
+            },
+            select: {
+                id: true,
+                username: true,
+                avatar: true,
+                bio: true,
+                level: true,
+            },
+            take: 20
+        });
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([

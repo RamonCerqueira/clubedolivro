@@ -21,8 +21,11 @@ let ChatController = class ChatController {
     constructor(chatService) {
         this.chatService = chatService;
     }
-    async getHistory(clubId, eventId) {
-        return this.chatService.getMessages(clubId, eventId);
+    async getHistory(req, clubId, eventId, receiverId) {
+        return this.chatService.getMessages(clubId, eventId, req.user.id, receiverId);
+    }
+    async sendMessage(req, body) {
+        return this.chatService.saveMessage(req.user.id, body.content, body.clubId, body.eventId, body.receiverId);
     }
     async createDiscussion(req, body) {
         return this.chatService.createDiscussion(req.user.id, body.bookId, body.content, body.chapter);
@@ -34,12 +37,22 @@ let ChatController = class ChatController {
 exports.ChatController = ChatController;
 __decorate([
     (0, common_1.Get)('history'),
-    __param(0, (0, common_1.Query)('clubId')),
-    __param(1, (0, common_1.Query)('eventId')),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('clubId')),
+    __param(2, (0, common_1.Query)('eventId')),
+    __param(3, (0, common_1.Query)('receiverId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", Promise)
 ], ChatController.prototype, "getHistory", null);
+__decorate([
+    (0, common_1.Post)('message'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ChatController.prototype, "sendMessage", null);
 __decorate([
     (0, common_1.Post)('discussions'),
     __param(0, (0, common_1.Request)()),

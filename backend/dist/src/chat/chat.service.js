@@ -17,18 +17,32 @@ let ChatService = class ChatService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async saveMessage(userId, content, clubId, eventId) {
+    async saveMessage(userId, content, clubId, eventId, receiverId) {
         return this.prisma.message.create({
             data: {
                 content,
                 userId,
                 clubId,
                 eventId,
+                receiverId,
             },
             include: { user: { select: { username: true, avatar: true } } },
         });
     }
-    async getMessages(clubId, eventId) {
+    async getMessages(clubId, eventId, userId, receiverId) {
+        if (userId && receiverId) {
+            return this.prisma.message.findMany({
+                where: {
+                    OR: [
+                        { userId: userId, receiverId: receiverId },
+                        { userId: receiverId, receiverId: userId },
+                    ]
+                },
+                include: { user: { select: { username: true, avatar: true } } },
+                orderBy: { createdAt: 'asc' },
+                take: 100,
+            });
+        }
         return this.prisma.message.findMany({
             where: { clubId, eventId },
             include: { user: { select: { username: true, avatar: true } } },

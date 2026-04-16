@@ -2,7 +2,7 @@ import { ChatService } from './chat.service';
 export declare class ChatController {
     private readonly chatService;
     constructor(chatService: ChatService);
-    getHistory(clubId?: string, eventId?: string): Promise<({
+    getHistory(req: any, clubId?: string, eventId?: string, receiverId?: string): Promise<({
         user: {
             username: string;
             avatar: string | null;
@@ -14,7 +14,27 @@ export declare class ChatController {
         content: string;
         clubId: string | null;
         eventId: string | null;
+        receiverId: string | null;
     })[]>;
+    sendMessage(req: any, body: {
+        content: string;
+        clubId?: string;
+        eventId?: string;
+        receiverId?: string;
+    }): Promise<{
+        user: {
+            username: string;
+            avatar: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        userId: string;
+        content: string;
+        clubId: string | null;
+        eventId: string | null;
+        receiverId: string | null;
+    }>;
     createDiscussion(req: any, body: {
         bookId: string;
         content: string;

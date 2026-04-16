@@ -36,6 +36,15 @@ let UserController = class UserController {
     async updateInterests(req, interests) {
         return this.userService.updateInterests(req.user.id, interests);
     }
+    async getFollowing(req) {
+        return this.userService.getFollowing(req.user.id);
+    }
+    async getFollowers(req) {
+        return this.userService.getFollowers(req.user.id);
+    }
+    async search(req, query) {
+        return this.userService.searchUsers(query.query.search || '');
+    }
 };
 exports.UserController = UserController;
 __decorate([
@@ -76,6 +85,28 @@ __decorate([
     __metadata("design:paramtypes", [Object, Array]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "updateInterests", null);
+__decorate([
+    (0, common_1.Get)('following/list'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getFollowing", null);
+__decorate([
+    (0, common_1.Get)('followers/list'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "getFollowers", null);
+__decorate([
+    (0, common_1.Get)('search/all'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "search", null);
 exports.UserController = UserController = __decorate([
     (0, common_1.Controller)('users'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

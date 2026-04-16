@@ -51,12 +51,12 @@ export class ClubController {
   // Feed
   @Post('posts')
   createGlobalPost(@Request() req: any, @Body('content') content: string) {
-    return this.clubService.createPost(req.user.id, undefined, content);
+    return this.clubService.createPost(req.user.id, content, undefined);
   }
 
   @Post(':id/posts')
   createPost(@Request() req: any, @Param('id') id: string, @Body('content') content: string) {
-    return this.clubService.createPost(req.user.id, id === 'global' ? undefined : id, content);
+    return this.clubService.createPost(req.user.id, content, id === 'global' ? undefined : id);
   }
 
   @Get('feed/global')
