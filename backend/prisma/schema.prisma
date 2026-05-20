@@ -38,6 +38,9 @@ model User {
 
   followedBy User[] @relation("UserFollows")
   following  User[] @relation("UserFollows")
+  journals   ReadingJournal[]
+  postComments     PostComment[]
+  postReactions    PostReaction[]
 }
 
 model Notification {
@@ -96,7 +99,9 @@ model Club {
   requests ClubJoinRequest[]
   posts    ClubPost[]
   messages Message[]
+  goals    ClubGoal[]
 }
+
 
 model ClubMember {
   id        String   @id @default(uuid())
@@ -147,11 +152,16 @@ model ClubPost {
   id        String   @id @default(uuid())
   content   String
   clubId    String?
-  club      Club?    @relation(fields: [clubId], references: [id])
+  club      Club?    @relation(fields: [clubId], references: [id], onDelete: Cascade)
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  audioUrl  String?
+  mediaUrl  String?
+  mediaType String? // 'IMAGE' or 'VIDEO'
+  comments  PostComment[]
+  reactions PostReaction[]
 }
 
 model Message {
@@ -166,7 +176,9 @@ model Message {
   eventId   String?
   event     Event?   @relation(fields: [eventId], references: [id])
   createdAt DateTime @default(now())
+  audioUrl  String?
 }
+
 
 model BookDiscussion {
   id        String   @id @default(uuid())
@@ -231,3 +243,55 @@ enum RsvpStatus {
   CONFIRMED
   DECLINED
 }
+
+model ReadingJournal {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookTitle String
+  author    String?
+  pagesRead Int
+  feelings  String[]
+  notes     String?
+  mediaUrl  String?
+  mediaType String?
+  createdAt DateTime @default(now())
+}
+
+model ClubGoal {
+  id           String   @id @default(uuid())
+  title        String
+  targetPages  Int
+  currentPages Int      @default(0)
+  startDate    DateTime @default(now())
+  endDate      DateTime
+  clubId       String
+  club         Club     @relation(fields: [clubId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  content   String
+  postId    String
+  post      ClubPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PostReaction {
+  id        String   @id @default(uuid())
+  postId    String
+  post      ClubPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  claps     Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([postId, userId])
+}
+

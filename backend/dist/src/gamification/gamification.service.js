@@ -8,24 +8,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var GamificationService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GamificationService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
 const notification_service_1 = require("../notification/notification.service");
-let GamificationService = class GamificationService {
+let GamificationService = GamificationService_1 = class GamificationService {
     prisma;
     notificationService;
+    logger = new common_1.Logger(GamificationService_1.name);
     constructor(prisma, notificationService) {
         this.prisma = prisma;
         this.notificationService = notificationService;
     }
     async addPoints(userId, points, reason) {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
-        if (!user)
+        if (!user) {
+            this.logger.warn(`Failed to add points: User with ID ${userId} not found.`);
             return;
+        }
         const newPoints = user.points + points;
         const newLevel = Math.floor(newPoints / 100) + 1;
+        this.logger.log(`Adding ${points} points to user ${user.username} (ID: ${userId}). Reason: "${reason}". Current points: ${user.points} -> New points: ${newPoints}.`);
         const updatedUser = await this.prisma.user.update({
             where: { id: userId },
             data: {
@@ -35,6 +40,7 @@ let GamificationService = class GamificationService {
             },
         });
         if (newLevel > user.level) {
+            this.logger.log(`User ${user.username} (ID: ${userId}) leveled up: ${user.level} -> ${newLevel}!`);
             await this.notificationService.notifyUser(userId, 'RANK', `Parabéns! Você alcançou o nível ${newLevel}!`);
         }
         return updatedUser;
@@ -75,7 +81,7 @@ let GamificationService = class GamificationService {
     }
 };
 exports.GamificationService = GamificationService;
-exports.GamificationService = GamificationService = __decorate([
+exports.GamificationService = GamificationService = GamificationService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         notification_service_1.NotificationService])

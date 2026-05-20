@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException, Logger } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,6 +7,8 @@ import { GamificationService } from '../gamification/gamification.service';
 
 @Injectable()
 export class EventService {
+  private readonly logger = new Logger(EventService.name);
+
   constructor(
     private prisma: PrismaService,
     @InjectQueue('reminders') private remindersQueue: Queue,
@@ -49,6 +51,8 @@ export class EventService {
       }
     });
 
+    this.logger.log(`Created new event "${event.title}" (ID: ${event.id}) for club ${clubId} by organizer ${organizerId}`);
+
     // 3. Schedule Reminder: 1 hour before the event
     const delay = new Date(event.date).getTime() - Date.now() - (60 * 60 * 1000);
     if (delay > 0) {
@@ -87,6 +91,8 @@ export class EventService {
       }
     });
 
+    this.logger.log(`User ${userId} RSVP'd successfully to event "${event.title}" (ID: ${eventId})`);
+
     await this.gamificationService.addPoints(userId, 20, 'Confirmou presença em evento');
 
     // Check if we reach >= 3 RSVPs to confirm event automatically
@@ -104,8 +110,24 @@ export class EventService {
     return rsvp;
   }
 
-  async findAll() {
+  async findAll(userId?: string) {
+    const whereClause: Prisma.EventWhereInput = {
+      club: {
+        OR: [
+          { isPrivate: false },
+          ...(userId ? [{
+            members: {
+              some: {
+                userId: userId
+              }
+            }
+          }] : [])
+        ]
+      }
+    };
+
     return this.prisma.event.findMany({
+      where: whereClause,
       include: { club: true, organizer: true, _count: { select: { rsvps: true } } }
     });
   }

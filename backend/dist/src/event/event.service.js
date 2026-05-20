@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var EventService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,10 +19,11 @@ const bullmq_1 = require("@nestjs/bullmq");
 const bullmq_2 = require("bullmq");
 const prisma_service_1 = require("../prisma/prisma.service");
 const gamification_service_1 = require("../gamification/gamification.service");
-let EventService = class EventService {
+let EventService = EventService_1 = class EventService {
     prisma;
     remindersQueue;
     gamificationService;
+    logger = new common_1.Logger(EventService_1.name);
     constructor(prisma, remindersQueue, gamificationService) {
         this.prisma = prisma;
         this.remindersQueue = remindersQueue;
@@ -57,6 +59,7 @@ let EventService = class EventService {
                 organizer: { connect: { id: organizerId } },
             }
         });
+        this.logger.log(`Created new event "${event.title}" (ID: ${event.id}) for club ${clubId} by organizer ${organizerId}`);
         const delay = new Date(event.date).getTime() - Date.now() - (60 * 60 * 1000);
         if (delay > 0) {
             await this.remindersQueue.add('event-reminder', { eventId: event.id }, { delay });
@@ -87,6 +90,7 @@ let EventService = class EventService {
                 status: 'CONFIRMED'
             }
         });
+        this.logger.log(`User ${userId} RSVP'd successfully to event "${event.title}" (ID: ${eventId})`);
         await this.gamificationService.addPoints(userId, 20, 'Confirmou presença em evento');
         const rsvpCount = await this.prisma.eventRsvp.count({
             where: { eventId, status: 'CONFIRMED' }
@@ -99,14 +103,29 @@ let EventService = class EventService {
         }
         return rsvp;
     }
-    async findAll() {
+    async findAll(userId) {
+        const whereClause = {
+            club: {
+                OR: [
+                    { isPrivate: false },
+                    ...(userId ? [{
+                            members: {
+                                some: {
+                                    userId: userId
+                                }
+                            }
+                        }] : [])
+                ]
+            }
+        };
         return this.prisma.event.findMany({
+            where: whereClause,
             include: { club: true, organizer: true, _count: { select: { rsvps: true } } }
         });
     }
 };
 exports.EventService = EventService;
-exports.EventService = EventService = __decorate([
+exports.EventService = EventService = EventService_1 = __decorate([
     (0, common_1.Injectable)(),
     __param(1, (0, bullmq_1.InjectQueue)('reminders')),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,

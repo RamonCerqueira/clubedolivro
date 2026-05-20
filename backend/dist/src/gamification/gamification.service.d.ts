@@ -3,6 +3,7 @@ import { NotificationService } from '../notification/notification.service';
 export declare class GamificationService {
     private prisma;
     private notificationService;
+    private readonly logger;
     constructor(prisma: PrismaService, notificationService: NotificationService);
     addPoints(userId: string, points: number, reason: string): Promise<{
         id: string;

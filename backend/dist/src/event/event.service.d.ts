@@ -6,6 +6,7 @@ export declare class EventService {
     private prisma;
     private remindersQueue;
     private gamificationService;
+    private readonly logger;
     constructor(prisma: PrismaService, remindersQueue: Queue, gamificationService: GamificationService);
     createEvent(clubId: string, organizerId: string, data: Partial<Prisma.EventCreateInput>): Promise<{
         id: string;
@@ -31,7 +32,7 @@ export declare class EventService {
         status: import("@prisma/client").$Enums.RsvpStatus;
         eventId: string;
     }>;
-    findAll(): Promise<({
+    findAll(userId?: string): Promise<({
         club: {
             id: string;
             city: string | null;

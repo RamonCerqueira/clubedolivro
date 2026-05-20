@@ -18,7 +18,7 @@ exports.NotificationModule = NotificationModule;
 exports.NotificationModule = NotificationModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
-        imports: [prisma_module_1.PrismaModule, gateway_module_1.GatewayModule],
+        imports: [prisma_module_1.PrismaModule, (0, common_1.forwardRef)(() => gateway_module_1.GatewayModule)],
         providers: [notification_service_1.NotificationService],
         controllers: [notification_controller_1.NotificationController],
         exports: [notification_service_1.NotificationService],

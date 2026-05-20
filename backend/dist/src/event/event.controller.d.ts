@@ -1,8 +1,9 @@
 import { EventService } from './event.service';
+import { CreateEventDto } from './dto/create-event.dto';
 export declare class EventController {
     private readonly eventService;
     constructor(eventService: EventService);
-    create(req: any, body: any): Promise<{
+    create(req: any, body: CreateEventDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -19,7 +20,7 @@ export declare class EventController {
         participantLimit: number | null;
         organizerId: string;
     }>;
-    findAll(): Promise<({
+    findAll(req: any): Promise<({
         club: {
             id: string;
             city: string | null;

@@ -121,11 +121,14 @@ export declare class ClubService {
         clubId: string;
         status: import("@prisma/client").$Enums.RequestStatus;
     }>;
-    createPost(userId: string, content: string, clubId?: string): Promise<{
+    createPost(userId: string, content: string, clubId?: string, audioUrl?: string, mediaUrl?: string, mediaType?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     }>;
@@ -134,11 +137,35 @@ export declare class ClubService {
             username: string;
             avatar: string | null;
         };
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     })[]>;
@@ -151,12 +178,65 @@ export declare class ClubService {
             id: string;
             name: string;
         } | null;
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     })[]>;
+    clapOnPost(userId: string, postId: string, claps: number): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        postId: string;
+        claps: number;
+    }>;
+    addComment(userId: string, postId: string, content: string): Promise<{
+        author: {
+            username: string;
+            avatar: string | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        postId: string;
+    }>;
+    removeComment(userId: string, commentId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        postId: string;
+    }>;
 }

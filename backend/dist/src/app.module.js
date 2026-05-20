@@ -28,6 +28,9 @@ const geolocation_module_1 = require("./geolocation/geolocation.module");
 const chat_module_1 = require("./chat/chat.module");
 const notification_module_1 = require("./notification/notification.module");
 const gamification_module_1 = require("./gamification/gamification.module");
+const journal_module_1 = require("./journal/journal.module");
+const goal_module_1 = require("./goal/goal.module");
+const upload_module_1 = require("./upload/upload.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -43,6 +46,14 @@ exports.AppModule = AppModule = __decorate([
                     connection: {
                         host: configService.get('REDIS_HOST', 'localhost'),
                         port: configService.get('REDIS_PORT', 6379),
+                        maxRetriesPerRequest: null,
+                        enableOfflineQueue: true,
+                        retryStrategy: (times) => {
+                            if (times === 1) {
+                                console.warn('⚠️ BullMQ failed to connect to Redis. Retrying in background...');
+                            }
+                            return Math.min(times * 500, 5000);
+                        }
                     },
                 }),
                 inject: [config_1.ConfigService],
@@ -50,14 +61,26 @@ exports.AppModule = AppModule = __decorate([
             cache_manager_1.CacheModule.registerAsync({
                 isGlobal: true,
                 imports: [config_1.ConfigModule],
-                useFactory: async (configService) => ({
-                    store: await (0, cache_manager_redis_yet_1.redisStore)({
-                        socket: {
-                            host: configService.get('REDIS_HOST', 'localhost'),
-                            port: configService.get('REDIS_PORT', 6379),
-                        },
-                    }),
-                }),
+                useFactory: async (configService) => {
+                    try {
+                        const store = await (0, cache_manager_redis_yet_1.redisStore)({
+                            socket: {
+                                host: configService.get('REDIS_HOST', 'localhost'),
+                                port: configService.get('REDIS_PORT', 6379),
+                            },
+                        });
+                        if (store.client) {
+                            store.client.on('error', (err) => {
+                                console.warn('⚠️ Redis Client connection error:', err.message);
+                            });
+                        }
+                        return { store };
+                    }
+                    catch (error) {
+                        console.warn('⚠️ Redis is not running locally. Falling back to in-memory cache store.', error.message);
+                        return {};
+                    }
+                },
                 inject: [config_1.ConfigService],
             }),
             throttler_1.ThrottlerModule.forRoot([{
@@ -75,7 +98,10 @@ exports.AppModule = AppModule = __decorate([
             geolocation_module_1.GeolocationModule,
             chat_module_1.ChatModule,
             notification_module_1.NotificationModule,
-            gamification_module_1.GamificationModule
+            gamification_module_1.GamificationModule,
+            journal_module_1.JournalModule,
+            goal_module_1.GoalModule,
+            upload_module_1.UploadModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [

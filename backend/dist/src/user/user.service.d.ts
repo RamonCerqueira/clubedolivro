@@ -1,8 +1,10 @@
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import { NotificationService } from '../notification/notification.service';
 export declare class UserService {
     private prisma;
-    constructor(prisma: PrismaService);
+    private notificationService;
+    constructor(prisma: PrismaService, notificationService: NotificationService);
     findOne(id: string): Promise<{
         id: string;
         username: string;
@@ -134,6 +136,16 @@ export declare class UserService {
             userId: string;
             clubId: string;
         })[];
+        achievements: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            userId: string;
+            type: string;
+            progress: number;
+            target: number;
+        }[];
         _count: {
             memberships: number;
             organizedEvents: number;

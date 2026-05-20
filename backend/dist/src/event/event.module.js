@@ -13,6 +13,7 @@ const event_service_1 = require("./event.service");
 const event_controller_1 = require("./event.controller");
 const prisma_module_1 = require("../prisma/prisma.module");
 const reminder_processor_1 = require("./processors/reminder.processor");
+const mail_module_1 = require("../mail/mail.module");
 let EventModule = class EventModule {
 };
 exports.EventModule = EventModule;
@@ -20,6 +21,7 @@ exports.EventModule = EventModule = __decorate([
     (0, common_1.Module)({
         imports: [
             prisma_module_1.PrismaModule,
+            mail_module_1.MailModule,
             bullmq_1.BullModule.registerQueue({
                 name: 'reminders',
             }),

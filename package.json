@@ -1,0 +1,12 @@
+{
+  "name": "clubedolivro-root",
+  "version": "1.0.0",
+  "description": "Root orchestration for Clube do Livro",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "dev": "node dev.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

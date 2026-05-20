@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EventsGateway } from '../gateway/events/events.gateway';
 
@@ -6,6 +6,7 @@ import { EventsGateway } from '../gateway/events/events.gateway';
 export class NotificationService {
   constructor(
     private prisma: PrismaService,
+    @Inject(forwardRef(() => EventsGateway))
     private gateway: EventsGateway,
   ) {}
 

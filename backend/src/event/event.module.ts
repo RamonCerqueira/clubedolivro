@@ -4,10 +4,12 @@ import { EventService } from './event.service';
 import { EventController } from './event.controller';
 import { PrismaModule } from '../prisma/prisma.module';
 import { ReminderProcessor } from './processors/reminder.processor';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
     PrismaModule,
+    MailModule,
     BullModule.registerQueue({
       name: 'reminders',
     }),
@@ -16,3 +18,4 @@ import { ReminderProcessor } from './processors/reminder.processor';
   providers: [EventService, ReminderProcessor],
 })
 export class EventModule {}
+

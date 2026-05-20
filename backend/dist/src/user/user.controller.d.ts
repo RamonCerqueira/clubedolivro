@@ -21,6 +21,16 @@ export declare class UserController {
             userId: string;
             clubId: string;
         })[];
+        achievements: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            userId: string;
+            type: string;
+            progress: number;
+            target: number;
+        }[];
         _count: {
             memberships: number;
             organizedEvents: number;
@@ -61,6 +71,16 @@ export declare class UserController {
             userId: string;
             clubId: string;
         })[];
+        achievements: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            userId: string;
+            type: string;
+            progress: number;
+            target: number;
+        }[];
         _count: {
             memberships: number;
             organizedEvents: number;

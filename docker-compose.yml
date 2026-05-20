@@ -15,6 +15,7 @@ services:
       - REDIS_HOST=host.docker.internal
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    command: sh -c "npx prisma migrate deploy && npm run start:prod"
     restart: always
 
   frontend:

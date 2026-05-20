@@ -35,8 +35,34 @@ let EventsGateway = class EventsGateway {
     async handleMessage(client, data) {
         const clubId = data.type === 'club' ? data.roomId : undefined;
         const eventId = data.type === 'event' ? data.roomId : undefined;
-        const message = await this.chatService.saveMessage(data.userId, data.content, clubId, eventId);
+        const receiverId = data.type === 'direct' ? data.receiverId : undefined;
+        const message = await this.chatService.saveMessage(data.userId, data.content, clubId, eventId, receiverId);
         this.server.to(data.roomId).emit('msgToClient', message);
+    }
+    handleJoinAudioRoom(client, data) {
+        client.join(`audio-${data.roomId}`);
+        client.to(`audio-${data.roomId}`).emit('userJoinedAudio', {
+            socketId: client.id,
+            userId: data.userId,
+            username: data.username,
+        });
+        this.logger.log(`User ${data.username} (${client.id}) joined audio room: audio-${data.roomId}`);
+    }
+    handleLeaveAudioRoom(client, data) {
+        client.leave(`audio-${data.roomId}`);
+        client.to(`audio-${data.roomId}`).emit('userLeftAudio', {
+            socketId: client.id,
+            userId: data.userId,
+        });
+        this.logger.log(`User ${data.userId} left audio room: audio-${data.roomId}`);
+    }
+    handleAudioSignal(client, data) {
+        this.server.to(data.toSocketId).emit('audioSignalReceived', {
+            fromSocketId: client.id,
+            signal: data.signal,
+            userId: data.userId,
+            username: data.username,
+        });
     }
     afterInit(server) {
         this.logger.log('Init');
@@ -77,12 +103,37 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], EventsGateway.prototype, "handleMessage", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('joinAudioRoom'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", void 0)
+], EventsGateway.prototype, "handleJoinAudioRoom", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('leaveAudioRoom'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", void 0)
+], EventsGateway.prototype, "handleLeaveAudioRoom", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('audioSignal'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", void 0)
+], EventsGateway.prototype, "handleAudioSignal", null);
 exports.EventsGateway = EventsGateway = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: {
             origin: '*',
         },
     }),
+    __param(0, (0, common_1.Inject)((0, common_1.forwardRef)(() => chat_service_1.ChatService))),
     __metadata("design:paramtypes", [chat_service_1.ChatService])
 ], EventsGateway);
 //# sourceMappingURL=events.gateway.js.map

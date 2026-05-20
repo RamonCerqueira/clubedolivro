@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../prisma/prisma.service");
+const notification_service_1 = require("../notification/notification.service");
 let UserService = class UserService {
     prisma;
-    constructor(prisma) {
+    notificationService;
+    constructor(prisma, notificationService) {
         this.prisma = prisma;
+        this.notificationService = notificationService;
     }
     async findOne(id) {
         const user = await this.prisma.user.findUnique({ where: { id } });
@@ -35,7 +38,7 @@ let UserService = class UserService {
     async followUser(followerId, followingId) {
         if (followerId === followingId)
             throw new Error('Cannot follow yourself');
-        return this.prisma.user.update({
+        const updatedFollower = await this.prisma.user.update({
             where: { id: followerId },
             data: {
                 following: {
@@ -43,6 +46,32 @@ let UserService = class UserService {
                 },
             },
         });
+        const followerUser = await this.prisma.user.findUnique({
+            where: { id: followerId },
+            select: { username: true }
+        });
+        const followedUser = await this.prisma.user.findUnique({
+            where: { id: followingId },
+            select: { username: true }
+        });
+        const isMutual = await this.prisma.user.findFirst({
+            where: {
+                id: followingId,
+                following: {
+                    some: {
+                        id: followerId
+                    }
+                }
+            }
+        });
+        if (isMutual) {
+            await this.notificationService.notifyUser(followingId, 'INVITE', `✨ Você e ${followerUser?.username} agora são amigos mútuos!`).catch(e => console.error('Failed to notify follow', e));
+            await this.notificationService.notifyUser(followerId, 'INVITE', `✨ Você e ${followedUser?.username} agora são amigos mútuos!`).catch(e => console.error('Failed to notify follow', e));
+        }
+        else {
+            await this.notificationService.notifyUser(followingId, 'INVITE', `👤 ${followerUser?.username} começou a te seguir!`).catch(e => console.error('Failed to notify follow', e));
+        }
+        return updatedFollower;
     }
     async unfollowUser(followerId, followingId) {
         return this.prisma.user.update({
@@ -77,6 +106,7 @@ let UserService = class UserService {
                     include: { club: true },
                     take: 5,
                 },
+                achievements: true,
             },
         });
         if (!user)
@@ -142,6 +172,7 @@ let UserService = class UserService {
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        notification_service_1.NotificationService])
 ], UserService);
 //# sourceMappingURL=user.service.js.map

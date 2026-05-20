@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class ChatService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => NotificationService))
+    private notificationService: NotificationService,
+  ) {}
 
   async saveMessage(userId: string, content: string, clubId?: string, eventId?: string, receiverId?: string) {
-    return this.prisma.message.create({
+    const message = await this.prisma.message.create({
       data: {
         content,
         userId,
@@ -16,6 +21,16 @@ export class ChatService {
       },
       include: { user: { select: { username: true, avatar: true } } },
     });
+
+    if (receiverId) {
+      await this.notificationService.notifyUser(
+        receiverId,
+        'MESSAGE',
+        `💬 ${message.user.username}: ${content.substring(0, 40)}${content.length > 40 ? '...' : ''}`
+      ).catch(e => console.error('Failed to notify message', e));
+    }
+
+    return message;
   }
 
   async getMessages(clubId?: string, eventId?: string, userId?: string, receiverId?: string) {

@@ -14,12 +14,15 @@ exports.ReminderProcessor = void 0;
 const bullmq_1 = require("@nestjs/bullmq");
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
+const mail_service_1 = require("../../mail/mail.service");
 let ReminderProcessor = ReminderProcessor_1 = class ReminderProcessor extends bullmq_1.WorkerHost {
     prisma;
+    mailService;
     logger = new common_1.Logger(ReminderProcessor_1.name);
-    constructor(prisma) {
+    constructor(prisma, mailService) {
         super();
         this.prisma = prisma;
+        this.mailService = mailService;
     }
     async process(job) {
         const { eventId } = job.data;
@@ -32,7 +35,15 @@ let ReminderProcessor = ReminderProcessor_1 = class ReminderProcessor extends bu
         this.logger.log(`Sending reminders for event: ${event.title}`);
         for (const rsvp of event.rsvps) {
             if (rsvp.status === 'CONFIRMED') {
-                this.logger.log(`Simulating email to ${rsvp.user.email}: O evento "${event.title}" começa em 1 hora!`);
+                this.logger.log(`Sending actual reminder email to ${rsvp.user.email} for event "${event.title}"`);
+                try {
+                    const dateStr = event.date ? new Date(event.date).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : 'Horário não definido';
+                    const locationStr = event.address || event.link || 'Online';
+                    await this.mailService.sendEventReminder(rsvp.user.email, event.title, dateStr, locationStr);
+                }
+                catch (error) {
+                    this.logger.error(`Failed to send email to ${rsvp.user.email}: ${error.message}`);
+                }
             }
         }
     }
@@ -40,6 +51,7 @@ let ReminderProcessor = ReminderProcessor_1 = class ReminderProcessor extends bu
 exports.ReminderProcessor = ReminderProcessor;
 exports.ReminderProcessor = ReminderProcessor = ReminderProcessor_1 = __decorate([
     (0, bullmq_1.Processor)('reminders'),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        mail_service_1.MailService])
 ], ReminderProcessor);
 //# sourceMappingURL=reminder.processor.js.map

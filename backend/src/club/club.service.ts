@@ -130,7 +130,7 @@ export class ClubService {
   }
 
   // Feed
-  async createPost(userId: string, content: string, clubId?: string) {
+  async createPost(userId: string, content: string, clubId?: string, audioUrl?: string, mediaUrl?: string, mediaType?: string) {
     if (clubId) {
       // Check membership if clubId is provided
       const membership = await this.prisma.clubMember.findUnique({
@@ -140,7 +140,7 @@ export class ClubService {
     }
 
     const post = await this.prisma.clubPost.create({
-      data: { content, clubId, authorId: userId }
+      data: { content, clubId, authorId: userId, audioUrl, mediaUrl, mediaType }
     });
 
     await this.gamificationService.addPoints(userId, 10, clubId ? 'Publicou uma discussão no clube' : 'Fez uma postagem no feed global');
@@ -151,7 +151,14 @@ export class ClubService {
   async getFeed(clubId: string) {
     return this.prisma.clubPost.findMany({
       where: { clubId },
-      include: { author: { select: { username: true, avatar: true } } },
+      include: {
+        author: { select: { username: true, avatar: true } },
+        comments: {
+          include: { author: { select: { username: true, avatar: true } } },
+          orderBy: { createdAt: 'asc' }
+        },
+        reactions: true
+      },
       orderBy: { createdAt: 'desc' },
       take: 50
     });
@@ -167,10 +174,100 @@ export class ClubService {
       },
       include: { 
         author: { select: { username: true, avatar: true } },
-        club: { select: { name: true, id: true } }
+        club: { select: { name: true, id: true } },
+        comments: {
+          include: { author: { select: { username: true, avatar: true } } },
+          orderBy: { createdAt: 'asc' }
+        },
+        reactions: true
       },
       orderBy: { createdAt: 'desc' },
       take: 50
+    });
+  }
+
+  async clapOnPost(userId: string, postId: string, claps: number) {
+    const post = await this.prisma.clubPost.findUnique({
+      where: { id: postId },
+      select: { authorId: true }
+    });
+    if (!post) throw new NotFoundException('Postagem não encontrada');
+
+    const clapCount = Math.max(1, Math.min(claps, 50));
+
+    const reaction = await this.prisma.postReaction.upsert({
+      where: {
+        postId_userId: { postId, userId }
+      },
+      create: {
+        postId,
+        userId,
+        claps: clapCount
+      },
+      update: {
+        claps: clapCount
+      }
+    });
+
+    if (post.authorId !== userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true }
+      });
+      await this.notificationService.notifyUser(
+        post.authorId,
+        'RANK',
+        `👏 "${user?.username || 'Alguém'}" aplaudiu sua postagem com ${clapCount} palmas!`
+      ).catch(() => {});
+    }
+
+    return reaction;
+  }
+
+  async addComment(userId: string, postId: string, content: string) {
+    const post = await this.prisma.clubPost.findUnique({
+      where: { id: postId },
+      select: { authorId: true }
+    });
+    if (!post) throw new NotFoundException('Postagem não encontrada');
+
+    const comment = await this.prisma.postComment.create({
+      data: {
+        content,
+        postId,
+        authorId: userId
+      },
+      include: {
+        author: { select: { username: true, avatar: true } }
+      }
+    });
+
+    if (post.authorId !== userId) {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true }
+      });
+      await this.notificationService.notifyUser(
+        post.authorId,
+        'MESSAGE',
+        `💬 "${user?.username || 'Alguém'}" comentou na sua postagem!`
+      ).catch(() => {});
+    }
+
+    return comment;
+  }
+
+  async removeComment(userId: string, commentId: string) {
+    const comment = await this.prisma.postComment.findUnique({
+      where: { id: commentId }
+    });
+    if (!comment) throw new NotFoundException('Comentário não encontrado');
+    if (comment.authorId !== userId) {
+      throw new BadRequestException('Não autorizado a excluir este comentário');
+    }
+
+    return this.prisma.postComment.delete({
+      where: { id: commentId }
     });
   }
 }

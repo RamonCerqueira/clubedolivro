@@ -12,9 +12,10 @@ export declare class ChatController {
         createdAt: Date;
         userId: string;
         content: string;
+        audioUrl: string | null;
         clubId: string | null;
-        eventId: string | null;
         receiverId: string | null;
+        eventId: string | null;
     })[]>;
     sendMessage(req: any, body: {
         content: string;
@@ -31,9 +32,10 @@ export declare class ChatController {
         createdAt: Date;
         userId: string;
         content: string;
+        audioUrl: string | null;
         clubId: string | null;
-        eventId: string | null;
         receiverId: string | null;
+        eventId: string | null;
     }>;
     createDiscussion(req: any, body: {
         bookId: string;

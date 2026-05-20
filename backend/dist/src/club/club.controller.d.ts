@@ -116,19 +116,25 @@ export declare class ClubController {
         clubId: string;
         status: import("@prisma/client").$Enums.RequestStatus;
     }>;
-    createGlobalPost(req: any, content: string): Promise<{
+    createGlobalPost(req: any, content: string, audioUrl?: string, mediaUrl?: string, mediaType?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     }>;
-    createPost(req: any, id: string, content: string): Promise<{
+    createPost(req: any, id: string, content: string, audioUrl?: string, mediaUrl?: string, mediaType?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     }>;
@@ -141,15 +147,84 @@ export declare class ClubController {
             id: string;
             name: string;
         } | null;
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
     } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
         content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
         clubId: string | null;
         authorId: string;
     })[]>;
     getFeed(id: string): Promise<({
+        author: {
+            username: string;
+            avatar: string | null;
+        };
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
+        clubId: string | null;
+        authorId: string;
+    })[]>;
+    clapOnPost(req: any, postId: string, claps: number): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        postId: string;
+        claps: number;
+    }>;
+    addComment(req: any, postId: string, content: string): Promise<{
         author: {
             username: string;
             avatar: string | null;
@@ -159,7 +234,15 @@ export declare class ClubController {
         createdAt: Date;
         updatedAt: Date;
         content: string;
-        clubId: string | null;
         authorId: string;
-    })[]>;
+        postId: string;
+    }>;
+    removeComment(req: any, commentId: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        postId: string;
+    }>;
 }

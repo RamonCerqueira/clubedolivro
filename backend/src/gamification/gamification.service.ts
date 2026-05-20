@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notification/notification.service';
 
 @Injectable()
 export class GamificationService {
+  private readonly logger = new Logger(GamificationService.name);
+
   constructor(
     private prisma: PrismaService,
     private notificationService: NotificationService,
@@ -11,10 +13,17 @@ export class GamificationService {
 
   async addPoints(userId: string, points: number, reason: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) return;
+    if (!user) {
+      this.logger.warn(`Failed to add points: User with ID ${userId} not found.`);
+      return;
+    }
 
     const newPoints = user.points + points;
     const newLevel = Math.floor(newPoints / 100) + 1;
+
+    this.logger.log(
+      `Adding ${points} points to user ${user.username} (ID: ${userId}). Reason: "${reason}". Current points: ${user.points} -> New points: ${newPoints}.`
+    );
 
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
@@ -26,6 +35,9 @@ export class GamificationService {
     });
 
     if (newLevel > user.level) {
+      this.logger.log(
+        `User ${user.username} (ID: ${userId}) leveled up: ${user.level} -> ${newLevel}!`
+      );
       await this.notificationService.notifyUser(
         userId,
         'RANK',

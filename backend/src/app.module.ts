@@ -20,6 +20,9 @@ import { ChatService } from './chat/chat.service';
 import { ChatModule } from './chat/chat.module';
 import { NotificationModule } from './notification/notification.module';
 import { GamificationModule } from './gamification/gamification.module';
+import { JournalModule } from './journal/journal.module';
+import { GoalModule } from './goal/goal.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -32,6 +35,15 @@ import { GamificationModule } from './gamification/gamification.module';
         connection: {
           host: configService.get<string>('REDIS_HOST', 'localhost'),
           port: configService.get<number>('REDIS_PORT', 6379),
+          maxRetriesPerRequest: null,
+          enableOfflineQueue: true,
+          retryStrategy: (times) => {
+            // Keep retrying in the background to prevent crash
+            if (times === 1) {
+              console.warn('⚠️ BullMQ failed to connect to Redis. Retrying in background...');
+            }
+            return Math.min(times * 500, 5000); // retry with exponential backoff up to 5s
+          }
         },
       }),
       inject: [ConfigService],
@@ -39,14 +51,26 @@ import { GamificationModule } from './gamification/gamification.module';
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          socket: {
-            host: configService.get<string>('REDIS_HOST', 'localhost'),
-            port: configService.get<number>('REDIS_PORT', 6379),
-          },
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        try {
+          const store = await redisStore({
+            socket: {
+              host: configService.get<string>('REDIS_HOST', 'localhost'),
+              port: configService.get<number>('REDIS_PORT', 6379),
+            },
+          });
+          if (store.client) {
+            store.client.on('error', (err: any) => {
+              // Gracefully handle client errors without crashing
+              console.warn('⚠️ Redis Client connection error:', err.message);
+            });
+          }
+          return { store };
+        } catch (error: any) {
+          console.warn('⚠️ Redis is not running locally. Falling back to in-memory cache store.', error.message);
+          return {}; // Falls back to default in-memory cache
+        }
+      },
       inject: [ConfigService],
     }),
     ThrottlerModule.forRoot([{
@@ -64,7 +88,10 @@ import { GamificationModule } from './gamification/gamification.module';
     GeolocationModule,
     ChatModule,
     NotificationModule,
-    GamificationModule
+    GamificationModule,
+    JournalModule,
+    GoalModule,
+    UploadModule
   ],
   controllers: [AppController],
   providers: [
@@ -76,3 +103,4 @@ import { GamificationModule } from './gamification/gamification.module';
   ],
 })
 export class AppModule {}
+

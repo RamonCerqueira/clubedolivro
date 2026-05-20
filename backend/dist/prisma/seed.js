@@ -80,6 +80,7 @@ async function main() {
         { title: 'Matéria Escura', author: 'Blake Crouch', categories: ['Suspense', 'Ficção Científica'], description: 'Um thriller sobre física quântica e escolhas.' },
         { title: 'Dom Casmurro', author: 'Machado de Assis', categories: ['Clássicos'], description: 'Capitu traiu ou não traiu?' },
         { title: 'Duna', author: 'Frank Herbert', categories: ['Ficção Científica', 'Fantasia'], description: 'O épico das areias de Arrakis.' },
+        { title: 'Solo Leveling - Volume 01', author: 'Chugong', categories: ['Anime & Mangá'], description: 'O despertar do caçador mais fraco da humanidade no portal de rank D.' },
     ];
     for (const book of books) {
         await prisma.book.create({ data: book });
@@ -104,10 +105,27 @@ async function main() {
             members: { create: [{ userId: user2.id, role: 'ADMIN' }] }
         }
     });
+    const club3 = await prisma.club.create({
+        data: {
+            name: 'Otaku Read & Discuss',
+            description: 'O ponto de encontro perfeito para debater mangás, animes, light novels e toda a cultura pop oriental!',
+            city: 'São Paulo',
+            isPrivate: false,
+            creatorId: user1.id,
+            members: { create: [{ userId: user1.id, role: 'ADMIN' }, { userId: user2.id, role: 'MEMBER' }] }
+        }
+    });
     await prisma.clubPost.create({
         data: {
             content: 'Alguém já começou a leitura do mês? Achei o primeiro capítulo de Duna denso mas incrível.',
             clubId: club1.id,
+            authorId: user1.id
+        }
+    });
+    await prisma.clubPost.create({
+        data: {
+            content: 'E aí pessoal! Sejam bem-vindos ao Otaku Read & Discuss. O que acharam da leitura do primeiro volume de Solo Leveling? O traço e a evolução do Jin-Woo são fantásticos!',
+            clubId: club3.id,
             authorId: user1.id
         }
     });

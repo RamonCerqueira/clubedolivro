@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GeolocationController = void 0;
 const common_1 = require("@nestjs/common");
 const geolocation_service_1 = require("./geolocation.service");
-const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 let GeolocationController = class GeolocationController {
     geolocationService;
     constructor(geolocationService) {
@@ -57,7 +56,6 @@ __decorate([
 ], GeolocationController.prototype, "geocode", null);
 exports.GeolocationController = GeolocationController = __decorate([
     (0, common_1.Controller)('geolocation'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [geolocation_service_1.GeolocationService])
 ], GeolocationController);
 //# sourceMappingURL=geolocation.controller.js.map

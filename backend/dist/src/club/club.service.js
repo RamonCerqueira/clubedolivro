@@ -117,7 +117,7 @@ let ClubService = class ClubService {
             data: { status }
         });
     }
-    async createPost(userId, content, clubId) {
+    async createPost(userId, content, clubId, audioUrl, mediaUrl, mediaType) {
         if (clubId) {
             const membership = await this.prisma.clubMember.findUnique({
                 where: { clubId_userId: { clubId, userId } }
@@ -126,7 +126,7 @@ let ClubService = class ClubService {
                 throw new common_1.BadRequestException('Must be a member of the club to post there');
         }
         const post = await this.prisma.clubPost.create({
-            data: { content, clubId, authorId: userId }
+            data: { content, clubId, authorId: userId, audioUrl, mediaUrl, mediaType }
         });
         await this.gamificationService.addPoints(userId, 10, clubId ? 'Publicou uma discussão no clube' : 'Fez uma postagem no feed global');
         return post;
@@ -134,7 +134,14 @@ let ClubService = class ClubService {
     async getFeed(clubId) {
         return this.prisma.clubPost.findMany({
             where: { clubId },
-            include: { author: { select: { username: true, avatar: true } } },
+            include: {
+                author: { select: { username: true, avatar: true } },
+                comments: {
+                    include: { author: { select: { username: true, avatar: true } } },
+                    orderBy: { createdAt: 'asc' }
+                },
+                reactions: true
+            },
             orderBy: { createdAt: 'desc' },
             take: 50
         });
@@ -149,10 +156,84 @@ let ClubService = class ClubService {
             },
             include: {
                 author: { select: { username: true, avatar: true } },
-                club: { select: { name: true, id: true } }
+                club: { select: { name: true, id: true } },
+                comments: {
+                    include: { author: { select: { username: true, avatar: true } } },
+                    orderBy: { createdAt: 'asc' }
+                },
+                reactions: true
             },
             orderBy: { createdAt: 'desc' },
             take: 50
+        });
+    }
+    async clapOnPost(userId, postId, claps) {
+        const post = await this.prisma.clubPost.findUnique({
+            where: { id: postId },
+            select: { authorId: true }
+        });
+        if (!post)
+            throw new common_1.NotFoundException('Postagem não encontrada');
+        const clapCount = Math.max(1, Math.min(claps, 50));
+        const reaction = await this.prisma.postReaction.upsert({
+            where: {
+                postId_userId: { postId, userId }
+            },
+            create: {
+                postId,
+                userId,
+                claps: clapCount
+            },
+            update: {
+                claps: clapCount
+            }
+        });
+        if (post.authorId !== userId) {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+                select: { username: true }
+            });
+            await this.notificationService.notifyUser(post.authorId, 'RANK', `👏 "${user?.username || 'Alguém'}" aplaudiu sua postagem com ${clapCount} palmas!`).catch(() => { });
+        }
+        return reaction;
+    }
+    async addComment(userId, postId, content) {
+        const post = await this.prisma.clubPost.findUnique({
+            where: { id: postId },
+            select: { authorId: true }
+        });
+        if (!post)
+            throw new common_1.NotFoundException('Postagem não encontrada');
+        const comment = await this.prisma.postComment.create({
+            data: {
+                content,
+                postId,
+                authorId: userId
+            },
+            include: {
+                author: { select: { username: true, avatar: true } }
+            }
+        });
+        if (post.authorId !== userId) {
+            const user = await this.prisma.user.findUnique({
+                where: { id: userId },
+                select: { username: true }
+            });
+            await this.notificationService.notifyUser(post.authorId, 'MESSAGE', `💬 "${user?.username || 'Alguém'}" comentou na sua postagem!`).catch(() => { });
+        }
+        return comment;
+    }
+    async removeComment(userId, commentId) {
+        const comment = await this.prisma.postComment.findUnique({
+            where: { id: commentId }
+        });
+        if (!comment)
+            throw new common_1.NotFoundException('Comentário não encontrado');
+        if (comment.authorId !== userId) {
+            throw new common_1.BadRequestException('Não autorizado a excluir este comentário');
+        }
+        return this.prisma.postComment.delete({
+            where: { id: commentId }
         });
     }
 };

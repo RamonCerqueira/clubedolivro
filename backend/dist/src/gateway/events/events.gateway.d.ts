@@ -16,8 +16,24 @@ export declare class EventsGateway implements OnGatewayInit, OnGatewayConnection
         roomId: string;
         userId: string;
         content: string;
-        type: 'club' | 'event';
+        type: 'club' | 'event' | 'direct';
+        receiverId?: string;
     }): Promise<void>;
+    handleJoinAudioRoom(client: Socket, data: {
+        roomId: string;
+        userId: string;
+        username: string;
+    }): void;
+    handleLeaveAudioRoom(client: Socket, data: {
+        roomId: string;
+        userId: string;
+    }): void;
+    handleAudioSignal(client: Socket, data: {
+        toSocketId: string;
+        signal: any;
+        userId: string;
+        username: string;
+    }): void;
     afterInit(server: Server): void;
     handleDisconnect(client: Socket): void;
     handleConnection(client: Socket, ...args: any[]): void;

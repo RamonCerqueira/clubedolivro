@@ -15,7 +15,7 @@ let GatewayModule = class GatewayModule {
 exports.GatewayModule = GatewayModule;
 exports.GatewayModule = GatewayModule = __decorate([
     (0, common_1.Module)({
-        imports: [chat_module_1.ChatModule],
+        imports: [(0, common_1.forwardRef)(() => chat_module_1.ChatModule)],
         providers: [events_gateway_1.EventsGateway],
         exports: [events_gateway_1.EventsGateway],
     })
