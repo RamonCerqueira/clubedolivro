@@ -30,6 +30,7 @@ export declare class EventController {
             description: string | null;
             isPrivate: boolean;
             creatorId: string;
+            currentBookId: string | null;
         };
         organizer: {
             id: string;

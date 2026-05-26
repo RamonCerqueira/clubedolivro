@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GamificationController = void 0;
 const common_1 = require("@nestjs/common");
@@ -21,6 +24,12 @@ let GamificationController = class GamificationController {
     async getRanking() {
         return this.gamificationService.getGlobalRanking();
     }
+    getMyStats(req) {
+        return this.gamificationService.getUserStats(req.user.id);
+    }
+    getUserStats(userId) {
+        return this.gamificationService.getUserStats(userId);
+    }
 };
 exports.GamificationController = GamificationController;
 __decorate([
@@ -29,6 +38,20 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], GamificationController.prototype, "getRanking", null);
+__decorate([
+    (0, common_1.Get)('stats'),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], GamificationController.prototype, "getMyStats", null);
+__decorate([
+    (0, common_1.Get)('stats/:userId'),
+    __param(0, (0, common_1.Param)('userId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], GamificationController.prototype, "getUserStats", null);
 exports.GamificationController = GamificationController = __decorate([
     (0, common_1.Controller)('gamification'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

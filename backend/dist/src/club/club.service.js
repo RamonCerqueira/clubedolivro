@@ -236,6 +236,48 @@ let ClubService = class ClubService {
             where: { id: commentId }
         });
     }
+    async getFollowingFeed(userId) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { following: { select: { id: true } } },
+        });
+        const followingIds = user?.following.map((u) => u.id) || [];
+        if (followingIds.length === 0)
+            return [];
+        return this.prisma.clubPost.findMany({
+            where: {
+                authorId: { in: followingIds },
+                OR: [
+                    { clubId: null },
+                    { club: { isPrivate: false } },
+                ],
+            },
+            include: {
+                author: { select: { id: true, username: true, avatar: true, level: true } },
+                club: { select: { name: true, id: true } },
+                comments: {
+                    include: { author: { select: { username: true, avatar: true } } },
+                    orderBy: { createdAt: 'asc' },
+                },
+                reactions: true,
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+        });
+    }
+    async setCurrentBook(operatorId, clubId, bookId) {
+        const membership = await this.prisma.clubMember.findUnique({
+            where: { clubId_userId: { clubId, userId: operatorId } },
+        });
+        if (!membership || membership.role !== 'ADMIN') {
+            throw new common_1.ForbiddenException('Apenas administradores podem definir o livro atual do clube');
+        }
+        return this.prisma.club.update({
+            where: { id: clubId },
+            data: { currentBookId: bookId },
+            include: { currentBook: true },
+        });
+    }
 };
 exports.ClubService = ClubService;
 exports.ClubService = ClubService = __decorate([

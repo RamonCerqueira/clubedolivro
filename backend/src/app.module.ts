@@ -23,6 +23,8 @@ import { GamificationModule } from './gamification/gamification.module';
 import { JournalModule } from './journal/journal.module';
 import { GoalModule } from './goal/goal.module';
 import { UploadModule } from './upload/upload.module';
+import { SearchModule } from './search/search.module';
+import { ReadingListModule } from './reading-list/reading-list.module';
 
 @Module({
   imports: [
@@ -73,10 +75,13 @@ import { UploadModule } from './upload/upload.module';
       },
       inject: [ConfigService],
     }),
-    ThrottlerModule.forRoot([{
-      ttl: 60000,
-      limit: 10,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        name: 'geral',
+        ttl: 60000,
+        limit: 30,
+      }
+    ]),
     PrismaModule, 
     UserModule, 
     AuthModule,
@@ -91,7 +96,9 @@ import { UploadModule } from './upload/upload.module';
     GamificationModule,
     JournalModule,
     GoalModule,
-    UploadModule
+    UploadModule,
+    SearchModule,
+    ReadingListModule,
   ],
   controllers: [AppController],
   providers: [

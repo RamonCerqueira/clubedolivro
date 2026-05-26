@@ -43,4 +43,28 @@ export class BookController {
   remove(@Param('id') id: string) {
     return this.bookService.remove(id);
   }
+
+  // ─── Discussões de Livros ─────────────────────────────────────────────────
+
+  @Post(':id/discussions')
+  createDiscussion(
+    @Param('id') bookId: string,
+    @Request() req: any,
+    @Body() body: { content: string; chapter?: number },
+  ) {
+    return this.bookService.createDiscussion(bookId, req.user.id, body);
+  }
+
+  @Get(':id/discussions')
+  getDiscussions(
+    @Param('id') bookId: string,
+    @Query('chapter') chapter?: string,
+  ) {
+    return this.bookService.getDiscussions(bookId, chapter ? parseInt(chapter) : undefined);
+  }
+
+  @Delete('discussions/:discussionId')
+  deleteDiscussion(@Param('discussionId') discussionId: string, @Request() req: any) {
+    return this.bookService.deleteDiscussion(discussionId, req.user.id);
+  }
 }

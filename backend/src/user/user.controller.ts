@@ -27,6 +27,11 @@ export class UserController {
     return this.userService.unfollowUser(req.user.id, id);
   }
 
+  @Put('profile')
+  async updateProfile(@Request() req: any, @Body() body: { bio?: string; city?: string; avatar?: string; interests?: string[] }) {
+    return this.userService.update(req.user.id, body);
+  }
+
   @Put('interests')
   async updateInterests(@Request() req: any, @Body('interests') interests: string[]) {
     return this.userService.updateInterests(req.user.id, interests);

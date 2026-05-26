@@ -83,6 +83,12 @@ export class ClubController {
     return this.clubService.getGlobalFeed();
   }
 
+  @Get('feed/following')
+  @UseGuards(JwtAuthGuard)
+  getFollowingFeed(@Request() req: any) {
+    return this.clubService.getFollowingFeed(req.user.id);
+  }
+
   @Get(':id/feed')
   getFeed(@Param('id') id: string) {
     return this.clubService.getFeed(id);
@@ -105,5 +111,16 @@ export class ClubController {
   @UseGuards(JwtAuthGuard)
   removeComment(@Request() req: any, @Param('commentId') commentId: string) {
     return this.clubService.removeComment(req.user.id, commentId);
+  }
+
+  // Livro Atual do Clube
+  @Patch(':id/current-book')
+  @UseGuards(JwtAuthGuard)
+  setCurrentBook(
+    @Request() req: any,
+    @Param('id') clubId: string,
+    @Body('bookId') bookId: string | null,
+  ) {
+    return this.clubService.setCurrentBook(req.user.id, clubId, bookId);
   }
 }

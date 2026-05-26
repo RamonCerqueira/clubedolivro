@@ -16,6 +16,7 @@ export declare class ClubService {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     }>;
     findAll(): Promise<({
         _count: {
@@ -30,6 +31,7 @@ export declare class ClubService {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     })[]>;
     findOne(id: string): Promise<{
         members: ({
@@ -86,6 +88,7 @@ export declare class ClubService {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     }>;
     createInvite(clubId: string): Promise<{
         id: string;
@@ -238,5 +241,73 @@ export declare class ClubService {
         content: string;
         authorId: string;
         postId: string;
+    }>;
+    getFollowingFeed(userId: string): Promise<({
+        author: {
+            id: string;
+            username: string;
+            avatar: string | null;
+            level: number;
+        };
+        club: {
+            id: string;
+            name: string;
+        } | null;
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
+        clubId: string | null;
+        authorId: string;
+    })[]>;
+    setCurrentBook(operatorId: string, clubId: string, bookId: string | null): Promise<{
+        currentBook: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            author: string;
+            description: string | null;
+            categories: string[];
+            cover: string | null;
+            pdfUrl: string | null;
+            externalLink: string | null;
+            uploaderId: string | null;
+        } | null;
+    } & {
+        id: string;
+        city: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        description: string | null;
+        isPrivate: boolean;
+        creatorId: string;
+        currentBookId: string | null;
     }>;
 }

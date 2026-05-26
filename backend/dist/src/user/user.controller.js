@@ -33,6 +33,9 @@ let UserController = class UserController {
     async unfollow(req, id) {
         return this.userService.unfollowUser(req.user.id, id);
     }
+    async updateProfile(req, body) {
+        return this.userService.update(req.user.id, body);
+    }
     async updateInterests(req, interests) {
         return this.userService.updateInterests(req.user.id, interests);
     }
@@ -77,6 +80,14 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", Promise)
 ], UserController.prototype, "unfollow", null);
+__decorate([
+    (0, common_1.Put)('profile'),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UserController.prototype, "updateProfile", null);
 __decorate([
     (0, common_1.Put)('interests'),
     __param(0, (0, common_1.Request)()),

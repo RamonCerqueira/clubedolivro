@@ -51,6 +51,9 @@ let ClubController = class ClubController {
     getGlobalFeed() {
         return this.clubService.getGlobalFeed();
     }
+    getFollowingFeed(req) {
+        return this.clubService.getFollowingFeed(req.user.id);
+    }
     getFeed(id) {
         return this.clubService.getFeed(id);
     }
@@ -62,6 +65,9 @@ let ClubController = class ClubController {
     }
     removeComment(req, commentId) {
         return this.clubService.removeComment(req.user.id, commentId);
+    }
+    setCurrentBook(req, clubId, bookId) {
+        return this.clubService.setCurrentBook(req.user.id, clubId, bookId);
     }
 };
 exports.ClubController = ClubController;
@@ -155,6 +161,14 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ClubController.prototype, "getGlobalFeed", null);
 __decorate([
+    (0, common_1.Get)('feed/following'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ClubController.prototype, "getFollowingFeed", null);
+__decorate([
     (0, common_1.Get)(':id/feed'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
@@ -190,6 +204,16 @@ __decorate([
     __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ClubController.prototype, "removeComment", null);
+__decorate([
+    (0, common_1.Patch)(':id/current-book'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Request)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)('bookId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, String, Object]),
+    __metadata("design:returntype", void 0)
+], ClubController.prototype, "setCurrentBook", null);
 exports.ClubController = ClubController = __decorate([
     (0, common_1.Controller)('clubs'),
     __metadata("design:paramtypes", [club_service_1.ClubService])

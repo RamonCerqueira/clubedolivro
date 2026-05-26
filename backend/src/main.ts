@@ -1,15 +1,30 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Controller, Get } from '@nestjs/common';
 import { GlobalExceptionFilter } from './common/filters/http-exception.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.enableCors();
-  
+
+  // Helmet de segurança HTTP
+  app.use(helmet());
+
+  // CORS explícito — permite frontend web e mobile
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:8081',
+      process.env.FRONTEND_URL || 'http://localhost:3000',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
+    credentials: true,
+  });
+
   // Ensure uploads directory exists
   const uploadsDir = join(__dirname, '..', 'uploads');
   if (!existsSync(uploadsDir)) {
@@ -20,13 +35,13 @@ async function bootstrap() {
   app.useStaticAssets(uploadsDir, {
     prefix: '/uploads/',
   });
-  
+
   // Habilita validação global estrita
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, // Remove campos não declarados no DTO
-      forbidNonWhitelisted: true, // Rejeita payloads com campos extras
-      transform: true, // Converte tipos de dados automaticamente
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
     }),
   );
 
@@ -34,5 +49,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3001);
+  console.log(`🚀 Leituri API running on: http://localhost:${process.env.PORT ?? 3001}`);
+  console.log(`❤️  Health check: http://localhost:${process.env.PORT ?? 3001}/health`);
 }
 bootstrap();

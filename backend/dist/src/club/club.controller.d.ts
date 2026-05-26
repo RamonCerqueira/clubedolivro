@@ -11,6 +11,7 @@ export declare class ClubController {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     }>;
     findAll(): Promise<({
         _count: {
@@ -25,6 +26,7 @@ export declare class ClubController {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     })[]>;
     findOne(id: string): Promise<{
         members: ({
@@ -81,6 +83,7 @@ export declare class ClubController {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     }>;
     createInvite(id: string): Promise<{
         id: string;
@@ -142,6 +145,49 @@ export declare class ClubController {
         author: {
             username: string;
             avatar: string | null;
+        };
+        club: {
+            id: string;
+            name: string;
+        } | null;
+        comments: ({
+            author: {
+                username: string;
+                avatar: string | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            postId: string;
+        })[];
+        reactions: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            postId: string;
+            claps: number;
+        }[];
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        audioUrl: string | null;
+        mediaUrl: string | null;
+        mediaType: string | null;
+        clubId: string | null;
+        authorId: string;
+    })[]>;
+    getFollowingFeed(req: any): Promise<({
+        author: {
+            id: string;
+            username: string;
+            avatar: string | null;
+            level: number;
         };
         club: {
             id: string;
@@ -244,5 +290,30 @@ export declare class ClubController {
         content: string;
         authorId: string;
         postId: string;
+    }>;
+    setCurrentBook(req: any, clubId: string, bookId: string | null): Promise<{
+        currentBook: {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            author: string;
+            description: string | null;
+            categories: string[];
+            cover: string | null;
+            pdfUrl: string | null;
+            externalLink: string | null;
+            uploaderId: string | null;
+        } | null;
+    } & {
+        id: string;
+        city: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        description: string | null;
+        isPrivate: boolean;
+        creatorId: string;
+        currentBookId: string | null;
     }>;
 }

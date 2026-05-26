@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
+@Throttle({ geral: { limit: 100, ttl: 60000 } })
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 

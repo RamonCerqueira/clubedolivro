@@ -16,6 +16,7 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const passport_1 = require("@nestjs/passport");
+const throttler_1 = require("@nestjs/throttler");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
@@ -48,6 +49,11 @@ let AuthController = class AuthController {
     }
     async magicLogin(token) {
         return this.authService.validateMagicToken(token);
+    }
+    async refresh(refreshToken) {
+        if (!refreshToken)
+            throw new common_1.UnauthorizedException('Refresh token não fornecido');
+        return this.authService.refreshAccessToken(refreshToken);
     }
     async logoutGlobal(req) {
         return this.authService.logoutGlobal(req.user.id);
@@ -115,6 +121,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AuthController.prototype, "magicLogin", null);
 __decorate([
+    (0, common_1.Post)('refresh'),
+    __param(0, (0, common_1.Body)('refresh_token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "refresh", null);
+__decorate([
     (0, common_1.Post)('logout-global'),
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     __param(0, (0, common_1.Request)()),
@@ -124,6 +137,7 @@ __decorate([
 ], AuthController.prototype, "logoutGlobal", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
+    (0, throttler_1.Throttle)({ geral: { limit: 5, ttl: 60000 } }),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map

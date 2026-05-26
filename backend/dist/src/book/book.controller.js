@@ -44,6 +44,15 @@ let BookController = class BookController {
     remove(id) {
         return this.bookService.remove(id);
     }
+    createDiscussion(bookId, req, body) {
+        return this.bookService.createDiscussion(bookId, req.user.id, body);
+    }
+    getDiscussions(bookId, chapter) {
+        return this.bookService.getDiscussions(bookId, chapter ? parseInt(chapter) : undefined);
+    }
+    deleteDiscussion(discussionId, req) {
+        return this.bookService.deleteDiscussion(discussionId, req.user.id);
+    }
 };
 exports.BookController = BookController;
 __decorate([
@@ -96,6 +105,31 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], BookController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Post)(':id/discussions'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Request)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:returntype", void 0)
+], BookController.prototype, "createDiscussion", null);
+__decorate([
+    (0, common_1.Get)(':id/discussions'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)('chapter')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], BookController.prototype, "getDiscussions", null);
+__decorate([
+    (0, common_1.Delete)('discussions/:discussionId'),
+    __param(0, (0, common_1.Param)('discussionId')),
+    __param(1, (0, common_1.Request)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], BookController.prototype, "deleteDiscussion", null);
 exports.BookController = BookController = __decorate([
     (0, common_1.Controller)('books'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

@@ -2,8 +2,10 @@ import { Controller, Post, Get, Body, UnauthorizedException, Request, UseGuards,
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from './jwt-auth.guard'; // I'll create this or use a generic one
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('auth')
+@Throttle({ geral: { limit: 5, ttl: 60000 } })
 export class AuthController {
   constructor(private authService: AuthService) {}
 
@@ -55,6 +57,13 @@ export class AuthController {
   @Get('magic-login')
   async magicLogin(@Query('token') token: string) {
     return this.authService.validateMagicToken(token);
+  }
+
+  // Refresh Token
+  @Post('refresh')
+  async refresh(@Body('refresh_token') refreshToken: string) {
+    if (!refreshToken) throw new UnauthorizedException('Refresh token não fornecido');
+    return this.authService.refreshAccessToken(refreshToken);
   }
 
   // Logout

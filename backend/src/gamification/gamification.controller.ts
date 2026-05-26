@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Request } from '@nestjs/common';
 import { GamificationService } from './gamification.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -10,5 +10,15 @@ export class GamificationController {
   @Get('ranking')
   async getRanking() {
     return this.gamificationService.getGlobalRanking();
+  }
+
+  @Get('stats')
+  getMyStats(@Request() req: any) {
+    return this.gamificationService.getUserStats(req.user.id);
+  }
+
+  @Get('stats/:userId')
+  getUserStats(@Param('userId') userId: string) {
+    return this.gamificationService.getUserStats(userId);
   }
 }

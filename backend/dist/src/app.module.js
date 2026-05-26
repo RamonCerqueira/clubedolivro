@@ -31,6 +31,8 @@ const gamification_module_1 = require("./gamification/gamification.module");
 const journal_module_1 = require("./journal/journal.module");
 const goal_module_1 = require("./goal/goal.module");
 const upload_module_1 = require("./upload/upload.module");
+const search_module_1 = require("./search/search.module");
+const reading_list_module_1 = require("./reading-list/reading-list.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -83,10 +85,13 @@ exports.AppModule = AppModule = __decorate([
                 },
                 inject: [config_1.ConfigService],
             }),
-            throttler_1.ThrottlerModule.forRoot([{
+            throttler_1.ThrottlerModule.forRoot([
+                {
+                    name: 'geral',
                     ttl: 60000,
-                    limit: 10,
-                }]),
+                    limit: 30,
+                }
+            ]),
             prisma_module_1.PrismaModule,
             user_module_1.UserModule,
             auth_module_1.AuthModule,
@@ -101,7 +106,9 @@ exports.AppModule = AppModule = __decorate([
             gamification_module_1.GamificationModule,
             journal_module_1.JournalModule,
             goal_module_1.GoalModule,
-            upload_module_1.UploadModule
+            upload_module_1.UploadModule,
+            search_module_1.SearchModule,
+            reading_list_module_1.ReadingListModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [

@@ -128,6 +128,7 @@ export declare class UserService {
                 description: string | null;
                 isPrivate: boolean;
                 creatorId: string;
+                currentBookId: string | null;
             };
         } & {
             id: string;

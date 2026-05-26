@@ -4,22 +4,30 @@ export declare class AuthController {
     constructor(authService: AuthService);
     login(body: any): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     register(body: any): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     googleAuth(req: any): Promise<void>;
     googleAuthRedirect(req: any): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     facebookAuth(req: any): Promise<void>;
     facebookAuthRedirect(req: any): Promise<{
         access_token: string;
+        refresh_token: string;
     }>;
     sendMagicLink(email: string): Promise<{
         message: string;
     }>;
     magicLogin(token: string): Promise<{
+        access_token: string;
+        refresh_token: string;
+    }>;
+    refresh(refreshToken: string): Promise<{
         access_token: string;
     }>;
     logoutGlobal(req: any): Promise<{

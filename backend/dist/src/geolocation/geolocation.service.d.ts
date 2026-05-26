@@ -19,6 +19,7 @@ export declare class GeolocationService {
             description: string | null;
             isPrivate: boolean;
             creatorId: string;
+            currentBookId: string | null;
         };
     } & {
         id: string;
@@ -50,5 +51,6 @@ export declare class GeolocationService {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     })[]>;
 }

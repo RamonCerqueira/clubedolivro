@@ -42,6 +42,7 @@ export declare class EventService {
             description: string | null;
             isPrivate: boolean;
             creatorId: string;
+            currentBookId: string | null;
         };
         organizer: {
             id: string;

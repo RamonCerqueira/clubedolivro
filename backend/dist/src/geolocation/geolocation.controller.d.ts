@@ -12,6 +12,7 @@ export declare class GeolocationController {
             description: string | null;
             isPrivate: boolean;
             creatorId: string;
+            currentBookId: string | null;
         };
     } & {
         id: string;
@@ -43,6 +44,7 @@ export declare class GeolocationController {
         description: string | null;
         isPrivate: boolean;
         creatorId: string;
+        currentBookId: string | null;
     })[]>;
     geocode(address: string): Promise<{
         lat: number;

@@ -56,6 +56,26 @@ export declare class BookController {
         uploaderId: string | null;
     }[]>;
     findOne(id: string): Promise<{
+        discussions: ({
+            author: {
+                id: string;
+                username: string;
+                avatar: string | null;
+                level: number;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            authorId: string;
+            chapter: number | null;
+            bookId: string;
+        })[];
+        _count: {
+            discussions: number;
+        };
+    } & {
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -93,5 +113,49 @@ export declare class BookController {
         pdfUrl: string | null;
         externalLink: string | null;
         uploaderId: string | null;
+    }>;
+    createDiscussion(bookId: string, req: any, body: {
+        content: string;
+        chapter?: number;
+    }): Promise<{
+        author: {
+            id: string;
+            username: string;
+            avatar: string | null;
+            level: number;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        chapter: number | null;
+        bookId: string;
+    }>;
+    getDiscussions(bookId: string, chapter?: string): Promise<({
+        author: {
+            id: string;
+            username: string;
+            avatar: string | null;
+            level: number;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        chapter: number | null;
+        bookId: string;
+    })[]>;
+    deleteDiscussion(discussionId: string, req: any): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        content: string;
+        authorId: string;
+        chapter: number | null;
+        bookId: string;
     }>;
 }

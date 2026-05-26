@@ -16,6 +16,7 @@ exports.ChatController = void 0;
 const common_1 = require("@nestjs/common");
 const chat_service_1 = require("./chat.service");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
+const throttler_1 = require("@nestjs/throttler");
 let ChatController = class ChatController {
     chatService;
     constructor(chatService) {
@@ -71,6 +72,7 @@ __decorate([
 exports.ChatController = ChatController = __decorate([
     (0, common_1.Controller)('chat'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, throttler_1.Throttle)({ geral: { limit: 100, ttl: 60000 } }),
     __metadata("design:paramtypes", [chat_service_1.ChatService])
 ], ChatController);
 //# sourceMappingURL=chat.controller.js.map

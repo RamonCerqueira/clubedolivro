@@ -21,12 +21,25 @@ let BookService = class BookService {
         return this.prisma.book.create({ data });
     }
     async findAll() {
-        return this.prisma.book.findMany();
+        return this.prisma.book.findMany({
+            orderBy: { createdAt: 'desc' },
+            take: 100,
+        });
     }
     async findOne(id) {
-        const book = await this.prisma.book.findUnique({ where: { id } });
+        const book = await this.prisma.book.findUnique({
+            where: { id },
+            include: {
+                discussions: {
+                    include: { author: { select: { id: true, username: true, avatar: true, level: true } } },
+                    orderBy: { createdAt: 'desc' },
+                    take: 20,
+                },
+                _count: { select: { discussions: true } },
+            },
+        });
         if (!book)
-            throw new common_1.NotFoundException('Book not found');
+            throw new common_1.NotFoundException('Livro não encontrado');
         return book;
     }
     async update(id, data) {
@@ -41,11 +54,11 @@ let BookService = class BookService {
                 OR: [
                     { title: { contains: query, mode: 'insensitive' } },
                     { author: { contains: query, mode: 'insensitive' } },
+                    { description: { contains: query, mode: 'insensitive' } },
                 ],
-                ...(tags && tags.length > 0
-                    ? { categories: { hasSome: tags } }
-                    : {}),
+                ...(tags && tags.length > 0 ? { categories: { hasSome: tags } } : {}),
             },
+            take: 20,
         });
     }
     async recommendBooks(userId) {
@@ -60,11 +73,52 @@ let BookService = class BookService {
             });
         }
         return this.prisma.book.findMany({
-            where: {
-                categories: { hasSome: user.interests },
-            },
+            where: { categories: { hasSome: user.interests } },
             take: 10,
         });
+    }
+    async createDiscussion(bookId, authorId, data) {
+        const book = await this.prisma.book.findUnique({ where: { id: bookId } });
+        if (!book)
+            throw new common_1.NotFoundException('Livro não encontrado');
+        return this.prisma.bookDiscussion.create({
+            data: {
+                content: data.content,
+                chapter: data.chapter,
+                bookId,
+                authorId,
+            },
+            include: {
+                author: { select: { id: true, username: true, avatar: true, level: true } },
+            },
+        });
+    }
+    async getDiscussions(bookId, chapter) {
+        const book = await this.prisma.book.findUnique({ where: { id: bookId } });
+        if (!book)
+            throw new common_1.NotFoundException('Livro não encontrado');
+        return this.prisma.bookDiscussion.findMany({
+            where: {
+                bookId,
+                ...(chapter !== undefined ? { chapter } : {}),
+            },
+            include: {
+                author: { select: { id: true, username: true, avatar: true, level: true } },
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 50,
+        });
+    }
+    async deleteDiscussion(discussionId, userId) {
+        const discussion = await this.prisma.bookDiscussion.findUnique({
+            where: { id: discussionId },
+        });
+        if (!discussion)
+            throw new common_1.NotFoundException('Discussão não encontrada');
+        if (discussion.authorId !== userId) {
+            throw new common_1.NotFoundException('Sem permissão para excluir esta discussão');
+        }
+        return this.prisma.bookDiscussion.delete({ where: { id: discussionId } });
     }
 };
 exports.BookService = BookService;

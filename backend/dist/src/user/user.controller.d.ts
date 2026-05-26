@@ -13,6 +13,7 @@ export declare class UserController {
                 description: string | null;
                 isPrivate: boolean;
                 creatorId: string;
+                currentBookId: string | null;
             };
         } & {
             id: string;
@@ -63,6 +64,7 @@ export declare class UserController {
                 description: string | null;
                 isPrivate: boolean;
                 creatorId: string;
+                currentBookId: string | null;
             };
         } & {
             id: string;
@@ -119,6 +121,27 @@ export declare class UserController {
         updatedAt: Date;
     }>;
     unfollow(req: any, id: string): Promise<{
+        id: string;
+        username: string;
+        email: string;
+        password: string | null;
+        avatar: string | null;
+        bio: string | null;
+        city: string | null;
+        level: number;
+        points: number;
+        streak: number;
+        lastActivityAt: Date;
+        interests: string[];
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    updateProfile(req: any, body: {
+        bio?: string;
+        city?: string;
+        avatar?: string;
+        interests?: string[];
+    }): Promise<{
         id: string;
         username: string;
         email: string;
