@@ -9,12 +9,42 @@ export class UserController {
 
   @Get('me')
   async getMe(@Request() req: any) {
-    return this.userService.getProfile(req.user.id);
+    return this.userService.getProfile(req.user.id, req.user.id);
+  }
+
+  @Get('search/all')
+  async search(@Request() req: any, @Request() query: any) {
+    return this.userService.searchUsers(query.query.search || '');
+  }
+
+  @Get('following/list')
+  async getFollowing(@Request() req: any) {
+    return this.userService.getFollowing(req.user.id);
+  }
+
+  @Get('followers/list')
+  async getFollowers(@Request() req: any) {
+    return this.userService.getFollowers(req.user.id);
+  }
+
+  @Get('recommendations/suggested')
+  async getRecommendations(@Request() req: any) {
+    return this.userService.getRecommendations(req.user.id);
+  }
+
+  @Get(':id/activity')
+  async getActivity(@Param('id') id: string) {
+    return this.userService.getUserActivity(id);
+  }
+
+  @Get(':id/statistics')
+  async getStatistics(@Param('id') id: string) {
+    return this.userService.getUserStatistics(id);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.userService.getProfile(id);
+  async findOne(@Request() req: any, @Param('id') id: string) {
+    return this.userService.getProfile(id, req.user.id);
   }
 
   @Post('follow/:id')
@@ -28,27 +58,12 @@ export class UserController {
   }
 
   @Put('profile')
-  async updateProfile(@Request() req: any, @Body() body: { bio?: string; city?: string; avatar?: string; interests?: string[] }) {
+  async updateProfile(@Request() req: any, @Body() body: { bio?: string; city?: string; avatar?: string; interests?: string[]; instagramUrl?: string; twitterUrl?: string; goodreadsUrl?: string }) {
     return this.userService.update(req.user.id, body);
   }
 
   @Put('interests')
   async updateInterests(@Request() req: any, @Body('interests') interests: string[]) {
     return this.userService.updateInterests(req.user.id, interests);
-  }
-
-  @Get('following/list')
-  async getFollowing(@Request() req: any) {
-    return this.userService.getFollowing(req.user.id);
-  }
-
-  @Get('followers/list')
-  async getFollowers(@Request() req: any) {
-    return this.userService.getFollowers(req.user.id);
-  }
-
-  @Get('search/all')
-  async search(@Request() req: any, @Request() query: any) {
-    return this.userService.searchUsers(query.query.search || '');
   }
 }

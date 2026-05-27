@@ -17,8 +17,8 @@ export declare class ReadingListService {
         } & {
             id: string;
             bookId: string;
-            addedAt: Date;
             listId: string;
+            addedAt: Date;
         })[];
     } & {
         id: string;
@@ -49,14 +49,14 @@ export declare class ReadingListService {
     } & {
         id: string;
         bookId: string;
-        addedAt: Date;
         listId: string;
+        addedAt: Date;
     }>;
     removeItem(userId: string, listId: string, bookId: string): Promise<{
         id: string;
         bookId: string;
-        addedAt: Date;
         listId: string;
+        addedAt: Date;
     }>;
     deleteList(userId: string, listId: string): Promise<{
         id: string;

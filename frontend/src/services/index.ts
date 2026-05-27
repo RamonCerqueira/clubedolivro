@@ -58,8 +58,8 @@ export const clubService = {
     const { data } = await api.post(`/clubs/posts/${postId}/react`, { claps });
     return data;
   },
-  async commentPost(postId: string, content: string) {
-    const { data } = await api.post(`/clubs/posts/${postId}/comments`, { content });
+  async commentPost(postId: string, content: string, parentId?: string) {
+    const { data } = await api.post(`/clubs/posts/${postId}/comments`, { content, parentId });
     return data;
   },
   async deleteComment(commentId: string) {

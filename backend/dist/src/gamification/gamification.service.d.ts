@@ -18,6 +18,9 @@ export declare class GamificationService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     } | undefined>;
@@ -34,6 +37,9 @@ export declare class GamificationService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     } | undefined>;

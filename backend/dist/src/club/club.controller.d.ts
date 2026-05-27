@@ -43,6 +43,9 @@ export declare class ClubController {
                 streak: number;
                 lastActivityAt: Date;
                 interests: string[];
+                instagramUrl: string | null;
+                twitterUrl: string | null;
+                goodreadsUrl: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
@@ -155,6 +158,20 @@ export declare class ClubController {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -162,6 +179,7 @@ export declare class ClubController {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;
@@ -198,6 +216,20 @@ export declare class ClubController {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -205,6 +237,7 @@ export declare class ClubController {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;
@@ -235,6 +268,20 @@ export declare class ClubController {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -242,6 +289,7 @@ export declare class ClubController {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;
@@ -270,7 +318,7 @@ export declare class ClubController {
         postId: string;
         claps: number;
     }>;
-    addComment(req: any, postId: string, content: string): Promise<{
+    addComment(req: any, postId: string, content: string, parentId?: string): Promise<{
         author: {
             username: string;
             avatar: string | null;
@@ -282,6 +330,7 @@ export declare class ClubController {
         content: string;
         authorId: string;
         postId: string;
+        parentId: string | null;
     }>;
     removeComment(req: any, commentId: string): Promise<{
         id: string;
@@ -290,6 +339,7 @@ export declare class ClubController {
         content: string;
         authorId: string;
         postId: string;
+        parentId: string | null;
     }>;
     setCurrentBook(req: any, clubId: string, bookId: string | null): Promise<{
         currentBook: {

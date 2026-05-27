@@ -106,7 +106,7 @@ export class UserService {
     });
   }
 
-  async getProfile(id: string) {
+  async getProfile(id: string, viewerId?: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -129,9 +129,24 @@ export class UserService {
 
     if (!user) throw new NotFoundException('User not found');
     
+    let isFollowing = false;
+    let isFollowedBy = false;
+
+    if (viewerId && viewerId !== id) {
+      const followCheck = await this.prisma.user.findUnique({
+        where: { id: viewerId },
+        select: {
+          following: { where: { id } },
+          followedBy: { where: { id } }
+        }
+      });
+      isFollowing = (followCheck?.following?.length ?? 0) > 0;
+      isFollowedBy = (followCheck?.followedBy?.length ?? 0) > 0;
+    }
+
     // Remove sensitive data
     const { password, ...safeUser } = user;
-    return safeUser;
+    return { ...safeUser, isFollowing, isFollowedBy };
   }
 
   async getFollowing(userId: string) {
@@ -189,5 +204,90 @@ export class UserService {
       },
       take: 20
     });
+  }
+
+  async getUserStatistics(id: string) {
+    const journals = await this.prisma.readingJournal.findMany({
+      where: { userId: id },
+      select: { pagesRead: true }
+    });
+    const totalPagesRead = journals.reduce((acc, curr) => acc + curr.pagesRead, 0);
+
+    const readBooks = await this.prisma.readingListItem.findMany({
+      where: { list: { userId: id, type: 'READ' } },
+      include: { book: true }
+    });
+
+    const booksReadCount = readBooks.length;
+    
+    const categoriesCount: Record<string, number> = {};
+    readBooks.forEach(item => {
+      item.book.categories.forEach(cat => {
+        categoriesCount[cat] = (categoriesCount[cat] || 0) + 1;
+      });
+    });
+
+    const favoriteCategories = Object.entries(categoriesCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(entry => entry[0]);
+
+    return { totalPagesRead, booksReadCount, favoriteCategories };
+  }
+
+  async getRecommendations(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { interests: true, following: { select: { id: true } } }
+    });
+
+    if (!user) return [];
+
+    const followingIds = user.following.map(f => f.id);
+    followingIds.push(userId);
+
+    return this.prisma.user.findMany({
+      where: { id: { notIn: followingIds }, interests: { hasSome: user.interests } },
+      select: { id: true, username: true, avatar: true, bio: true, interests: true },
+      take: 10
+    });
+  }
+
+  async getUserActivity(id: string) {
+    const posts = await this.prisma.clubPost.findMany({
+      where: { authorId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: { club: { select: { name: true } } }
+    });
+
+    const rsvps = await this.prisma.eventRsvp.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      include: { event: { select: { title: true, date: true } } }
+    });
+
+    const readingListItems = await this.prisma.readingListItem.findMany({
+      where: { list: { userId: id } },
+      orderBy: { addedAt: 'desc' },
+      take: 10,
+      include: { book: { select: { title: true, author: true } }, list: { select: { type: true } } }
+    });
+
+    const journals = await this.prisma.readingJournal.findMany({
+      where: { userId: id },
+      orderBy: { createdAt: 'desc' },
+      take: 10
+    });
+
+    const activity = [
+      ...posts.map(p => ({ type: 'POST', date: p.createdAt, data: p })),
+      ...rsvps.map(r => ({ type: 'RSVP', date: r.createdAt, data: r })),
+      ...readingListItems.map(r => ({ type: 'READING_LIST', date: r.addedAt, data: r })),
+      ...journals.map(j => ({ type: 'JOURNAL', date: j.createdAt, data: j }))
+    ];
+
+    return activity.sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 20);
   }
 }

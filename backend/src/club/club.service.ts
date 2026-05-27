@@ -154,7 +154,14 @@ export class ClubService {
       include: {
         author: { select: { username: true, avatar: true } },
         comments: {
-          include: { author: { select: { username: true, avatar: true } } },
+          where: { parentId: null },
+          include: { 
+            author: { select: { username: true, avatar: true } },
+            replies: {
+              include: { author: { select: { username: true, avatar: true } } },
+              orderBy: { createdAt: 'asc' }
+            }
+          },
           orderBy: { createdAt: 'asc' }
         },
         reactions: true
@@ -176,7 +183,14 @@ export class ClubService {
         author: { select: { username: true, avatar: true } },
         club: { select: { name: true, id: true } },
         comments: {
-          include: { author: { select: { username: true, avatar: true } } },
+          where: { parentId: null },
+          include: { 
+            author: { select: { username: true, avatar: true } },
+            replies: {
+              include: { author: { select: { username: true, avatar: true } } },
+              orderBy: { createdAt: 'asc' }
+            }
+          },
           orderBy: { createdAt: 'asc' }
         },
         reactions: true
@@ -224,7 +238,7 @@ export class ClubService {
     return reaction;
   }
 
-  async addComment(userId: string, postId: string, content: string) {
+  async addComment(userId: string, postId: string, content: string, parentId?: string) {
     const post = await this.prisma.clubPost.findUnique({
       where: { id: postId },
       select: { authorId: true }
@@ -235,7 +249,8 @@ export class ClubService {
       data: {
         content,
         postId,
-        authorId: userId
+        authorId: userId,
+        parentId: parentId || null,
       },
       include: {
         author: { select: { username: true, avatar: true } }
@@ -295,7 +310,14 @@ export class ClubService {
         author: { select: { id: true, username: true, avatar: true, level: true } },
         club: { select: { name: true, id: true } },
         comments: {
-          include: { author: { select: { username: true, avatar: true } } },
+          where: { parentId: null },
+          include: { 
+            author: { select: { username: true, avatar: true } },
+            replies: {
+              include: { author: { select: { username: true, avatar: true } } },
+              orderBy: { createdAt: 'asc' }
+            }
+          },
           orderBy: { createdAt: 'asc' },
         },
         reactions: true,

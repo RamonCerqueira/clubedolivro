@@ -23,7 +23,7 @@ async function bootstrap() {
         allowedHeaders: ['Content-Type', 'Authorization', 'x-refresh-token'],
         credentials: true,
     });
-    const uploadsDir = (0, path_1.join)(__dirname, '..', 'uploads');
+    const uploadsDir = (0, path_1.join)(process.cwd(), 'uploads');
     if (!(0, fs_1.existsSync)(uploadsDir)) {
         (0, fs_1.mkdirSync)(uploadsDir, { recursive: true });
     }

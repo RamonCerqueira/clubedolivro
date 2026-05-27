@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { LogIn, Mail, Lock, ArrowRight, Facebook, MailMinusIcon } from "lucide-react";
+import { LogIn, Mail, Lock, ArrowRight, Facebook, MailMinusIcon, Book, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { authService } from "@/services/auth.service";
@@ -13,6 +13,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function LoginPage() {
   const [email, setEmail] = useState("ramon@example.com");
   const [password, setPassword] = useState("123456");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { setAuth } = useAuthStore();
@@ -33,15 +34,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] -z-10" />
+    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/bg-book-club.png')" }}>
+      {/* Background Glow & Overlay */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-md z-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[120px] z-0" />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md z-10"
       >
         <Card className="p-8 md:p-10 glass-card border-border shadow-2xl relative">
           <div className="flex flex-col items-center text-center mb-8">
@@ -73,13 +75,20 @@ export default function LoginPage() {
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={18} />
                 <input 
-                  type="password" 
+                  type={showPassword ? "text" : "password"} 
                   placeholder="••••••••"
-                  className="w-full bg-foreground/[0.03] dark:bg-black/40 pl-12 pr-4 py-4 rounded-xl border border-border outline-none focus:border-primary/50 transition-all text-sm text-foreground"
+                  className="w-full bg-foreground/[0.03] dark:bg-black/60 pl-12 pr-12 py-4 rounded-xl border border-border outline-none focus:border-primary/50 transition-all text-sm text-foreground backdrop-blur-sm"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-primary transition-colors"
+                >
+                  {showPassword ? <BookOpen size={18} /> : <Book size={18} />}
+                </button>
               </div>
             </div>
 

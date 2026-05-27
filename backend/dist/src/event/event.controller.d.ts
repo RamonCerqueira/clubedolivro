@@ -45,6 +45,9 @@ export declare class EventController {
             streak: number;
             lastActivityAt: Date;
             interests: string[];
+            instagramUrl: string | null;
+            twitterUrl: string | null;
+            goodreadsUrl: string | null;
             createdAt: Date;
             updatedAt: Date;
         };

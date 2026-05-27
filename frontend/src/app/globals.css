@@ -127,3 +127,12 @@ body {
 .drop-shadow-glow {
   animation: glow 3s ease-in-out infinite;
 }
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+

@@ -17,8 +17,8 @@ export declare class ReadingListController {
         } & {
             id: string;
             bookId: string;
-            addedAt: Date;
             listId: string;
+            addedAt: Date;
         })[];
     } & {
         id: string;
@@ -43,8 +43,8 @@ export declare class ReadingListController {
         } & {
             id: string;
             bookId: string;
-            addedAt: Date;
             listId: string;
+            addedAt: Date;
         })[];
     } & {
         id: string;
@@ -75,14 +75,14 @@ export declare class ReadingListController {
     } & {
         id: string;
         bookId: string;
-        addedAt: Date;
         listId: string;
+        addedAt: Date;
     }>;
     removeItem(req: any, listId: string, bookId: string): Promise<{
         id: string;
         bookId: string;
-        addedAt: Date;
         listId: string;
+        addedAt: Date;
     }>;
     deleteList(req: any, listId: string): Promise<{
         id: string;

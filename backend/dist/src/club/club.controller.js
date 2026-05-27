@@ -60,8 +60,8 @@ let ClubController = class ClubController {
     clapOnPost(req, postId, claps) {
         return this.clubService.clapOnPost(req.user.id, postId, claps);
     }
-    addComment(req, postId, content) {
-        return this.clubService.addComment(req.user.id, postId, content);
+    addComment(req, postId, content, parentId) {
+        return this.clubService.addComment(req.user.id, postId, content, parentId);
     }
     removeComment(req, commentId) {
         return this.clubService.removeComment(req.user.id, commentId);
@@ -191,8 +191,9 @@ __decorate([
     __param(0, (0, common_1.Request)()),
     __param(1, (0, common_1.Param)('postId')),
     __param(2, (0, common_1.Body)('content')),
+    __param(3, (0, common_1.Body)('parentId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, String, String]),
+    __metadata("design:paramtypes", [Object, String, String, String]),
     __metadata("design:returntype", void 0)
 ], ClubController.prototype, "addComment", null);
 __decorate([

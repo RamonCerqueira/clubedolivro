@@ -48,6 +48,9 @@ export declare class ClubService {
                 streak: number;
                 lastActivityAt: Date;
                 interests: string[];
+                instagramUrl: string | null;
+                twitterUrl: string | null;
+                goodreadsUrl: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
@@ -145,6 +148,20 @@ export declare class ClubService {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -152,6 +169,7 @@ export declare class ClubService {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;
@@ -186,6 +204,20 @@ export declare class ClubService {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -193,6 +225,7 @@ export declare class ClubService {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;
@@ -221,7 +254,7 @@ export declare class ClubService {
         postId: string;
         claps: number;
     }>;
-    addComment(userId: string, postId: string, content: string): Promise<{
+    addComment(userId: string, postId: string, content: string, parentId?: string): Promise<{
         author: {
             username: string;
             avatar: string | null;
@@ -233,6 +266,7 @@ export declare class ClubService {
         content: string;
         authorId: string;
         postId: string;
+        parentId: string | null;
     }>;
     removeComment(userId: string, commentId: string): Promise<{
         id: string;
@@ -241,6 +275,7 @@ export declare class ClubService {
         content: string;
         authorId: string;
         postId: string;
+        parentId: string | null;
     }>;
     getFollowingFeed(userId: string): Promise<({
         author: {
@@ -258,6 +293,20 @@ export declare class ClubService {
                 username: string;
                 avatar: string | null;
             };
+            replies: ({
+                author: {
+                    username: string;
+                    avatar: string | null;
+                };
+            } & {
+                id: string;
+                createdAt: Date;
+                updatedAt: Date;
+                content: string;
+                authorId: string;
+                postId: string;
+                parentId: string | null;
+            })[];
         } & {
             id: string;
             createdAt: Date;
@@ -265,6 +314,7 @@ export declare class ClubService {
             content: string;
             authorId: string;
             postId: string;
+            parentId: string | null;
         })[];
         reactions: {
             id: string;

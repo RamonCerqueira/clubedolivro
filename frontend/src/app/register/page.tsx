@@ -15,7 +15,9 @@ import {
   Camera,
   Target,
   ChevronLeft,
-  Star
+  Star,
+  Book,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -24,7 +26,6 @@ import { cn } from "@/lib/utils";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/store/useAuthStore";
 import Link from "next/link";
-import { AlertCircle } from "lucide-react";
 
 // Lazy load PortalScene to prevent SSR issues
 const PortalScene = React.lazy(() => import("@/components/three/PortalScene"));
@@ -42,6 +43,7 @@ const GENRES = [
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -115,14 +117,15 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-[#050505]">
+    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-cover bg-center bg-fixed" style={{ backgroundImage: "url('/bg-book-club.png')" }}>
       {/* Dynamic Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-lg z-0" />
+      <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[180px] animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-secondary/20 rounded-full blur-[180px] animate-pulse delay-1000" />
       </div>
 
-      <div className="w-full max-w-4xl grid md:grid-cols-5 gap-10 items-start">
+      <div className="w-full max-w-4xl grid md:grid-cols-5 gap-10 items-start z-10">
         
         {/* Progress Sidebar - Desktop */}
         <div className="hidden md:flex flex-col gap-8 col-span-2 pt-10">
@@ -200,15 +203,22 @@ export default function RegisterPage() {
 
                       <div className="space-y-2">
                         <label className="text-xs font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Senha de Acesso</label>
-                        <div className="relative group">
+                         <div className="relative group">
                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-600 group-focus-within:text-primary transition-colors" size={20} />
                            <input 
-                              type="password" 
+                              type={showPassword ? "text" : "password"} 
                               placeholder="Mínimo 8 caracteres"
-                              className="w-full bg-black/40 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white outline-none focus:border-primary/50 transition-all font-bold"
+                              className="w-full bg-black/60 backdrop-blur-sm border border-white/10 rounded-2xl py-5 pl-14 pr-14 text-white outline-none focus:border-primary/50 transition-all font-bold"
                               value={formData.password}
                               onChange={(e) => setFormData({...formData, password: e.target.value})}
                            />
+                           <button 
+                             type="button"
+                             onClick={() => setShowPassword(!showPassword)}
+                             className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-primary transition-colors"
+                           >
+                             {showPassword ? <BookOpen size={20} /> : <Book size={20} />}
+                           </button>
                         </div>
                       </div>
                     </div>

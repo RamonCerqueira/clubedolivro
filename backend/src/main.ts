@@ -26,7 +26,7 @@ async function bootstrap() {
   });
 
   // Ensure uploads directory exists
-  const uploadsDir = join(__dirname, '..', 'uploads');
+  const uploadsDir = join(process.cwd(), 'uploads');
   if (!existsSync(uploadsDir)) {
     mkdirSync(uploadsDir, { recursive: true });
   }

@@ -18,6 +18,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -34,6 +37,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     } | null>;
@@ -50,6 +56,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -66,6 +75,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -82,6 +94,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -98,6 +113,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -114,10 +132,15 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
-    getProfile(id: string): Promise<{
+    getProfile(id: string, viewerId?: string): Promise<{
+        isFollowing: boolean;
+        isFollowedBy: boolean;
         memberships: ({
             club: {
                 id: string;
@@ -165,6 +188,9 @@ export declare class UserService {
         streak: number;
         lastActivityAt: Date;
         interests: string[];
+        instagramUrl: string | null;
+        twitterUrl: string | null;
+        goodreadsUrl: string | null;
         createdAt: Date;
         updatedAt: Date;
     }>;
@@ -191,4 +217,82 @@ export declare class UserService {
         bio: string | null;
         level: number;
     }[]>;
+    getUserStatistics(id: string): Promise<{
+        totalPagesRead: number;
+        booksReadCount: number;
+        favoriteCategories: string[];
+    }>;
+    getRecommendations(userId: string): Promise<{
+        id: string;
+        username: string;
+        avatar: string | null;
+        bio: string | null;
+        interests: string[];
+    }[]>;
+    getUserActivity(id: string): Promise<({
+        type: string;
+        date: Date;
+        data: {
+            club: {
+                name: string;
+            } | null;
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            content: string;
+            audioUrl: string | null;
+            mediaUrl: string | null;
+            mediaType: string | null;
+            clubId: string | null;
+            authorId: string;
+        };
+    } | {
+        type: string;
+        date: Date;
+        data: {
+            event: {
+                title: string;
+                date: Date;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            userId: string;
+            status: import("@prisma/client").$Enums.RsvpStatus;
+            eventId: string;
+        };
+    } | {
+        type: string;
+        date: Date;
+        data: {
+            book: {
+                title: string;
+                author: string;
+            };
+            list: {
+                type: import("@prisma/client").$Enums.ReadingListType;
+            };
+        } & {
+            id: string;
+            bookId: string;
+            listId: string;
+            addedAt: Date;
+        };
+    } | {
+        type: string;
+        date: Date;
+        data: {
+            id: string;
+            createdAt: Date;
+            author: string | null;
+            userId: string;
+            mediaUrl: string | null;
+            mediaType: string | null;
+            bookTitle: string;
+            pagesRead: number;
+            feelings: string[];
+            notes: string | null;
+        };
+    })[]>;
 }

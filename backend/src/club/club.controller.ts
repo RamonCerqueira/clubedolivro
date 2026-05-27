@@ -103,8 +103,8 @@ export class ClubController {
 
   @Post('posts/:postId/comments')
   @UseGuards(JwtAuthGuard)
-  addComment(@Request() req: any, @Param('postId') postId: string, @Body('content') content: string) {
-    return this.clubService.addComment(req.user.id, postId, content);
+  addComment(@Request() req: any, @Param('postId') postId: string, @Body('content') content: string, @Body('parentId') parentId?: string) {
+    return this.clubService.addComment(req.user.id, postId, content, parentId);
   }
 
   @Delete('posts/comments/:commentId')
